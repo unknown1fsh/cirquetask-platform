@@ -1,0 +1,9 @@
+{
+  "title": "Test Task 1",
+  "description": "First test task",
+  "priority": "HIGH",
+  "type": "TASK",
+  "storyPoints": 5,
+  "columnId": 1,
+  "dueDate": "2026-03-01"
+}

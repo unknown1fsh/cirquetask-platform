@@ -1,0 +1,8 @@
+{
+  "title": "Test Task 1 Updated",
+  "description": "Updated description",
+  "priority": "CRITICAL",
+  "type": "FEATURE",
+  "storyPoints": 8,
+  "dueDate": "2026-03-10"
+}

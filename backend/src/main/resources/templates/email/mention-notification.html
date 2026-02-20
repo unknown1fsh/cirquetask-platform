@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #8b5cf6; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; }
+        .mention-box { background: white; padding: 15px; border-radius: 6px; border-left: 4px solid #8b5cf6; margin: 15px 0; }
+        .btn { display: inline-block; background: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
+        .footer { text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="margin:0;">You Were Mentioned</h2>
+    </div>
+    <div class="content">
+        <p>Hi <span th:text="${recipientName}">User</span>,</p>
+        <p><strong th:text="${senderName}">Someone</strong> mentioned you in <strong th:text="${taskKey}">TASK-123</strong>:</p>
+        <div class="mention-box">
+            <p th:text="${mentionContext}">Context...</p>
+        </div>
+        <p><small>Task: <span th:text="${taskTitle}">Task Title</span></small></p>
+        <a th:href="${taskUrl}" class="btn">View Task</a>
+    </div>
+    <div class="footer">
+        <p>This email was sent by CirqueTask</p>
+    </div>
+</body>
+</html>

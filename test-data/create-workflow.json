@@ -1,0 +1,8 @@
+{
+  "name": "Auto assign on create",
+  "description": "Automatically assign creator when task is created",
+  "trigger": "TASK_CREATED",
+  "action": "ASSIGN_USER",
+  "actionValue": "2",
+  "isActive": true
+}

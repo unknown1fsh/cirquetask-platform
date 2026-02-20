@@ -1,0 +1,100 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cirquetask
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cirquetask_db?stringtype=unspecified
+    username: postgres
+    password: ${DB_PASSWORD:&pH(nAfj_I!#S7dw}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# App
+app:
+  frontend-url: http://localhost:4200
+  upload-dir: ./uploads
+  jwt:
+    secret: ${JWT_SECRET:Vm9ydGV4UHJvamVjdE1hbmFnZW1lbnRQbGF0Zm9ybVNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbjIwMjQ=}
+    expiration-ms: 86400000        # 24 hours
+    refresh-expiration-ms: 604800000  # 7 days
+
+# CORS Configuration
+app.cors:
+  allowed-origins: http://localhost:4200
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: "*"
+
+# Actuator (health/readiness for deployment and load balancer)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when_authorized
+  health:
+    probes:
+      enabled: true
+
+# Swagger / OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+logging:
+  level:
+    com.cirquetask: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG

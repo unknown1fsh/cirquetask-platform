@@ -1,0 +1,7 @@
+{
+  "name": "Environment",
+  "fieldType": "DROPDOWN",
+  "dropdownOptions": ["Production", "Staging", "Development"],
+  "isRequired": false,
+  "description": "Deployment environment"
+}

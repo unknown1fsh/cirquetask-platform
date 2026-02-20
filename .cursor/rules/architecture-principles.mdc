@@ -1,0 +1,76 @@
+---
+description: CirqueTask projesi için temel mimari prensipler ve kod standartları
+alwaysApply: true
+---
+
+# Mimari Prensipler
+
+## Backend - Clean Code & Profesyonel Yapı
+
+Backend **mutlak suretle** Clean Code prensiplerine göre yazılacak:
+
+### Yapısal Kurallar
+- **SOLID prensipleri** uygulanacak
+- **Single Responsibility**: Her sınıf tek bir sorumluluk taşıyacak
+- **Dependency Injection**: Constructor injection tercih edilecek
+- **Interface segregation**: Servisler interface üzerinden çalışacak
+
+### Katmanlı Mimari
+```
+Controller → Service Interface → Service Impl → Repository
+```
+
+- Controller: Sadece HTTP request/response işlemleri
+- Service: Tüm iş mantığı burada
+- Repository: Sadece veri erişimi
+
+### Kod Kalitesi
+- Anlamlı ve açıklayıcı method/değişken isimleri
+- Magic number/string kullanılmayacak (constant olarak tanımla)
+- Null döndürmek yerine Optional kullan
+- Exception handling düzgün yapılacak (GlobalExceptionHandler)
+- Validation anotasyonları kullanılacak (@Valid, @NotNull, vb.)
+
+### Örnek Yapı
+```java
+// ✅ DOĞRU
+@Service
+@RequiredArgsConstructor
+public class TaskServiceImpl implements TaskService {
+    private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    
+    @Override
+    @Transactional
+    public TaskDto createTask(TaskRequest request) {
+        // İş mantığı burada
+    }
+}
+
+// ❌ YANLIŞ - İş mantığı controller'da
+@PostMapping
+public ResponseEntity<?> createTask(@RequestBody TaskRequest request) {
+    // Validation, business logic BURADA OLMAMALI
+}
+```
+
+## Frontend - Minimal İşlem Prensibi
+
+Frontend **mümkün olduğunca basit** tutulacak:
+
+### Temel Kural
+- Frontend sadece **backend'den servis çağırmaya** yarar
+- İş mantığı (business logic) **kesinlikle frontend'de olmayacak**
+- Tüm hesaplamalar, validasyonlar, veri işlemleri backend'de yapılacak
+
+### Frontend Sorumlulukları
+- UI render etmek
+- Kullanıcı etkileşimlerini yakalamak
+- Backend API'lerini çağırmak
+- Response'u görüntülemek
+
+### Frontend'de OLMAYACAKLAR
+- Karmaşık iş mantığı
+- Veri dönüşümleri (backend DTO'lar hazır dönecek)
+- Yetkilendirme kontrolleri (backend'de yapılacak)
+- Hesaplamalar (backend yapıp sonucu gönderecek)

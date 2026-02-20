@@ -1,0 +1,7 @@
+{
+  "name": "Test Project",
+  "description": "A test project for API testing",
+  "prefix": "TST",
+  "color": "#6366f1",
+  "icon": "rocket"
+}

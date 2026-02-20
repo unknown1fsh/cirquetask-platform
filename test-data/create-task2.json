@@ -1,0 +1,9 @@
+{
+  "title": "Test Task 2",
+  "description": "Second test task for dependencies",
+  "priority": "MEDIUM",
+  "type": "BUG",
+  "storyPoints": 3,
+  "columnId": 2,
+  "dueDate": "2026-03-05"
+}

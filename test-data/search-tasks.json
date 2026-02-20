@@ -1,0 +1,6 @@
+{
+  "query": "Test",
+  "projectIds": [2],
+  "statuses": ["OPEN", "IN_PROGRESS"],
+  "priorities": ["CRITICAL", "HIGH", "MEDIUM"]
+}
