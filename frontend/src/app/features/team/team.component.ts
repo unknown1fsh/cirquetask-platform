@@ -18,56 +18,41 @@ import { Member, ProjectRole } from '../../core/models';
   selector: 'app-team',
   standalone: true,
   imports: [
-    CommonModule,
-    TranslateModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule
+    CommonModule, TranslateModule, MatCardModule, MatIconModule, MatButtonModule,
+    MatDialogModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, ReactiveFormsModule
   ],
   template: `
     <div class="team-page">
       @if (loading()) {
-        <div class="loading-state">
-          <mat-spinner diameter="48"></mat-spinner>
-          <p>{{ 'team.loadingTeam' | translate }}</p>
-        </div>
+        <div class="loading-state"><mat-spinner diameter="40"></mat-spinner><p>{{ 'team.loadingTeam' | translate }}</p></div>
       } @else {
         <div class="page-header">
           <div>
             <h1>{{ 'team.title' | translate }}</h1>
-            <p class="text-muted">{{ 'team.subtitle' | translate }}</p>
+            <p class="header-subtitle">{{ 'team.subtitle' | translate }}</p>
           </div>
-          <button mat-raised-button color="primary" (click)="openInviteDialog()">
+          <button mat-flat-button color="primary" (click)="openInviteDialog()">
             <mat-icon>person_add</mat-icon>
             {{ 'team.inviteMember' | translate }}
           </button>
         </div>
 
-        <div class="members-list cirquetask-card">
+        <div class="members-card">
           @if (members().length) {
             @for (member of members(); track member.id) {
               <div class="member-row">
-                <div class="member-avatar" [class]="'role-' + member.role.toLowerCase()">
-                  {{ getInitials(member) }}
-                </div>
+                <div class="member-avatar" [class]="'role-' + member.role.toLowerCase()">{{ getInitials(member) }}</div>
                 <div class="member-info">
                   <span class="member-name">{{ member.firstName }} {{ member.lastName }}</span>
-                  <span class="member-email text-muted">{{ member.email }}</span>
+                  <span class="member-email">{{ member.email }}</span>
                 </div>
-                <span class="role-badge" [class]="'role-' + member.role.toLowerCase()">
-                  {{ member.role }}
-                </span>
-                <span class="joined-date text-muted">{{ formatDate(member.joinedAt) }}</span>
+                <span class="role-badge" [class]="'role-' + member.role.toLowerCase()">{{ member.role }}</span>
+                <span class="joined-date">{{ formatDate(member.joinedAt) }}</span>
               </div>
             }
           } @else {
             <div class="empty-state">
-              <mat-icon>people</mat-icon>
+              <div class="empty-icon"><mat-icon>people_outline</mat-icon></div>
               <p>{{ 'team.noMembers' | translate }}</p>
               <button mat-stroked-button (click)="openInviteDialog()">{{ 'team.inviteFirst' | translate }}</button>
             </div>
@@ -75,61 +60,69 @@ import { Member, ProjectRole } from '../../core/models';
         </div>
       }
     </div>
-
   `,
   styles: [`
-    .team-page { max-width: 900px; margin: 0 auto; }
+    .team-page { max-width: 860px; margin: 0 auto; }
     .page-header {
       display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+      margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);
     }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-    .page-header p { margin-top: 4px; }
+    .page-header h1 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; }
+    .header-subtitle { color: var(--text-tertiary); font-size: 0.875rem; margin-top: var(--space-1); }
 
     .loading-state {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 64px; color: var(--text-muted);
-      mat-spinner { margin-bottom: 16px; }
+      padding: var(--space-16); color: var(--text-muted); gap: var(--space-4);
     }
 
-    .members-list { padding: 0; overflow: hidden; }
+    .members-card {
+      background: var(--bg-card); border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+
     .member-row {
-      display: flex; align-items: center; gap: 16px;
-      padding: 16px 24px; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--border-secondary);
+      transition: background var(--transition-fast);
       &:last-child { border-bottom: none; }
+      &:hover { background: var(--hover-bg); }
     }
-    .member-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.875rem; color: white;
-      flex-shrink: 0;
-    }
-    .member-avatar.role-owner { background: #7c3aed; }
-    .member-avatar.role-admin { background: #2563eb; }
-    .member-avatar.role-member { background: #16a34a; }
-    .member-avatar.role-viewer { background: #6b7280; }
 
-    .member-info {
-      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+    .member-avatar {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; color: white; flex-shrink: 0;
+      &.role-owner { background: #7c3aed; }
+      &.role-admin { background: #2563eb; }
+      &.role-member { background: #10b981; }
+      &.role-viewer { background: #64748b; }
     }
-    .member-name { font-weight: 600; color: var(--text-primary); }
-    .member-email { font-size: 0.8rem; }
+
+    .member-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .member-name { font-weight: 500; font-size: 0.875rem; color: var(--text-primary); }
+    .member-email { font-size: 0.75rem; color: var(--text-muted); }
 
     .role-badge {
-      font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 12px;
+      font-size: 0.6875rem; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-full);
+      &.role-owner { background: rgba(124,58,237,0.1); color: #7c3aed; }
+      &.role-admin { background: rgba(37,99,235,0.1); color: #2563eb; }
+      &.role-member { background: rgba(16,185,129,0.1); color: #10b981; }
+      &.role-viewer { background: rgba(100,116,139,0.1); color: #64748b; }
     }
-    .role-badge.role-owner { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
-    .role-badge.role-admin { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
-    .role-badge.role-member { background: rgba(22, 163, 74, 0.15); color: #16a34a; }
-    .role-badge.role-viewer { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
 
-    .joined-date { font-size: 0.8rem; }
+    .joined-date { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
 
     .empty-state {
-      text-align: center; padding: 48px 24px; color: var(--text-muted);
-      mat-icon { font-size: 64px; width: 64px; height: 64px; opacity: 0.3; margin-bottom: 16px; overflow: hidden; }
-      p { margin-bottom: 16px; }
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-16) var(--space-6); text-align: center;
     }
+    .empty-icon {
+      width: 56px; height: 56px; border-radius: var(--radius-xl); background: var(--bg-tertiary);
+      display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4);
+      mat-icon { font-size: 24px; width: 24px; height: 24px; color: var(--text-muted); }
+    }
+    .empty-state p { color: var(--text-secondary); margin-bottom: var(--space-4); }
   `]
 })
 export class TeamComponent implements OnInit {
@@ -141,108 +134,59 @@ export class TeamComponent implements OnInit {
 
   loading = signal(true);
   members = signal<Member[]>([]);
+  projectId = computed(() => { const id = this.route.snapshot.paramMap.get('projectId'); return id ? +id : 0; });
 
-  projectId = computed(() => {
-    const id = this.route.snapshot.paramMap.get('projectId');
-    return id ? +id : 0;
-  });
-
-  ngOnInit(): void {
-    this.loadMembers();
-  }
+  ngOnInit(): void { this.loadMembers(); }
 
   loadMembers(): void {
     const pid = this.projectId();
     if (pid) {
       this.projectService.getMembers(pid).subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.members.set(res.data);
-          }
-          this.loading.set(false);
-        },
+        next: (res) => { if (res.success) this.members.set(res.data); this.loading.set(false); },
         error: () => this.loading.set(false)
       });
-    } else {
-      this.loading.set(false);
-    }
+    } else { this.loading.set(false); }
   }
 
   getInitials(member: Member): string {
-    const first = member.firstName?.charAt(0) ?? '';
-    const last = member.lastName?.charAt(0) ?? '';
-    return (first + last).toUpperCase() || (member.email?.charAt(0)?.toUpperCase() ?? '?');
+    return ((member.firstName?.charAt(0) ?? '') + (member.lastName?.charAt(0) ?? '')).toUpperCase() || (member.email?.charAt(0)?.toUpperCase() ?? '?');
   }
 
-  private get locale(): string {
-    const map: Record<string, string> = { tr: 'tr-TR', en: 'en-US' };
-    return map[this.translate.currentLang] || 'en-US';
-  }
+  private get locale(): string { const map: Record<string, string> = { tr: 'tr-TR', en: 'en-US' }; return map[this.translate.currentLang] || 'en-US'; }
 
   formatDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString(this.locale, {
-      month: 'short', day: 'numeric', year: 'numeric'
-    });
+    return new Date(dateStr).toLocaleDateString(this.locale, { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   openInviteDialog(): void {
-    const dialogRef = this.dialog.open(InviteMemberDialogComponent, {
-      width: '400px',
-      data: { projectId: this.projectId() }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.loadMembers();
-      }
-    });
+    const dialogRef = this.dialog.open(InviteMemberDialogComponent, { width: '400px', data: { projectId: this.projectId() } });
+    dialogRef.afterClosed().subscribe(result => { if (result === true) this.loadMembers(); });
   }
 }
 
 @Component({
   selector: 'app-invite-member-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslateModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    ReactiveFormsModule
-  ],
+  imports: [CommonModule, TranslateModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, ReactiveFormsModule],
   template: `
     <h2 mat-dialog-title>{{ 'team.inviteDialog.title' | translate }}</h2>
     <mat-dialog-content>
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="w-full">
         <mat-label>{{ 'team.inviteDialog.emailLabel' | translate }}</mat-label>
         <input matInput [formControl]="emailControl" [placeholder]="'team.inviteDialog.emailPlaceholder' | translate" type="email" />
-        @if (emailControl.hasError('required') && emailControl.touched) {
-          <mat-error>{{ 'team.inviteDialog.emailRequired' | translate }}</mat-error>
-        }
-        @if (emailControl.hasError('email') && emailControl.touched) {
-          <mat-error>{{ 'team.inviteDialog.emailInvalid' | translate }}</mat-error>
-        }
+        @if (emailControl.hasError('required') && emailControl.touched) { <mat-error>{{ 'team.inviteDialog.emailRequired' | translate }}</mat-error> }
+        @if (emailControl.hasError('email') && emailControl.touched) { <mat-error>{{ 'team.inviteDialog.emailInvalid' | translate }}</mat-error> }
       </mat-form-field>
-      @if (errorMessage()) {
-        <p class="error-text">{{ errorMessage() }}</p>
-      }
+      @if (errorMessage()) { <p class="error-text">{{ errorMessage() }}</p> }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-raised-button color="primary" (click)="invite()" [disabled]="inviting() || emailControl.invalid">
-        @if (inviting()) {
-          {{ 'team.inviteDialog.inviting' | translate }}
-        } @else {
-          {{ 'team.inviteDialog.invite' | translate }}
-        }
+      <button mat-flat-button color="primary" (click)="invite()" [disabled]="inviting() || emailControl.invalid">
+        {{ inviting() ? ('team.inviteDialog.inviting' | translate) : ('team.inviteDialog.invite' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
-  styles: [`
-    .full-width { width: 100%; }
-    .error-text { color: var(--danger); font-size: 0.875rem; margin-top: -8px; }
-  `]
+  styles: [`.w-full { width: 100%; } .error-text { color: var(--danger); font-size: 0.8125rem; margin-top: -8px; }`]
 })
 export class InviteMemberDialogComponent {
   private readonly translate = inject(TranslateService);
@@ -258,30 +202,18 @@ export class InviteMemberDialogComponent {
   invite(): void {
     const email = this.emailControl.value?.trim();
     if (!email || this.emailControl.invalid || !this.data.projectId) return;
-
     this.inviting.set(true);
     this.errorMessage.set(null);
-
     this.userService.searchByEmail(email).subscribe({
       next: (res) => {
         if (res.success && res.data.length > 0) {
-          const user = res.data[0];
-          this.projectService.addMember(this.data.projectId, user.id, 'MEMBER').subscribe({
+          this.projectService.addMember(this.data.projectId, res.data[0].id, 'MEMBER').subscribe({
             next: () => this.dialogRef.close(true),
-            error: (err) => {
-              this.errorMessage.set(err.error?.message ?? this.translate.instant('team.inviteDialog.failedAdd'));
-              this.inviting.set(false);
-            }
+            error: (err) => { this.errorMessage.set(err.error?.message ?? this.translate.instant('team.inviteDialog.failedAdd')); this.inviting.set(false); }
           });
-        } else {
-          this.errorMessage.set(this.translate.instant('team.inviteDialog.noUserFound'));
-          this.inviting.set(false);
-        }
+        } else { this.errorMessage.set(this.translate.instant('team.inviteDialog.noUserFound')); this.inviting.set(false); }
       },
-      error: () => {
-        this.errorMessage.set(this.translate.instant('team.inviteDialog.failedSearch'));
-        this.inviting.set(false);
-      }
+      error: () => { this.errorMessage.set(this.translate.instant('team.inviteDialog.failedSearch')); this.inviting.set(false); }
     });
   }
 }

@@ -1,6 +1,7 @@
 {
   "errors": {
     "forbidden": "You do not have permission for this action.",
+    "planLimit": "You've reached your plan limit. Redirecting to Pricing to upgrade.",
     "notFound": "Resource not found.",
     "tooManyRequests": "Too many requests. Please try again later.",
     "serverError": "Server error. Please try again later.",
@@ -108,6 +109,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "projects": "Projects",
+    "pricing": "Pricing",
     "notifications": "Notifications",
     "settings": "Settings",
     "myProjects": "MY PROJECTS",
@@ -250,6 +252,14 @@
     "title": "Settings",
     "subtitle": "Manage your profile and preferences",
     "profile": "Profile",
+    "subscription": "Subscription",
+    "currentPlan": "Current plan",
+    "usage": "Usage",
+    "projectsUsed": "{{current}} / {{max}} projects",
+    "membersPerProject": "Up to {{max}} members per project",
+    "upgrade": "Upgrade",
+    "manageBilling": "Manage subscription",
+    "subscriptionSectionDesc": "View your plan and usage.",
     "appearance": "Appearance",
     "firstName": "First name",
     "lastName": "Last name",
@@ -263,5 +273,24 @@
     "languageDesc": "Select interface language",
     "langTr": "Türkçe",
     "langEn": "English"
+  },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "Choose the plan that fits your needs",
+    "free": "Free",
+    "pro": "Pro",
+    "business": "Business",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "freeDesc": "For small teams",
+    "proDesc": "For growing teams",
+    "businessDesc": "For organizations",
+    "freeFeatures": "2 projects, 5 members per project, core features",
+    "proFeatures": "10 projects, 15 members/project, Gantt, reports, custom fields, time tracking",
+    "businessFeatures": "Unlimited projects and members, all features, API",
+    "getStarted": "Get Started Free",
+    "upgradeToPro": "Go Pro",
+    "upgradeToBusiness": "Go Business",
+    "currentPlan": "Current plan"
   }
 }

@@ -66,6 +66,16 @@ app:
     expiration-ms: 86400000        # 24 hours
     refresh-expiration-ms: 604800000  # 7 days
 
+# Stripe (use env vars in production: STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_*)
+stripe:
+  api-key: ${STRIPE_API_KEY:}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+  price-id-pro-monthly: ${STRIPE_PRICE_PRO_MONTHLY:price_pro_monthly}
+  price-id-pro-yearly: ${STRIPE_PRICE_PRO_YEARLY:price_pro_yearly}
+  price-id-business-monthly: ${STRIPE_PRICE_BUSINESS_MONTHLY:price_business_monthly}
+  price-id-business-yearly: ${STRIPE_PRICE_BUSINESS_YEARLY:price_business_yearly}
+  portal-return-url: ${STRIPE_PORTAL_RETURN_URL:http://localhost:4200/settings}
+
 # CORS Configuration
 app.cors:
   allowed-origins: http://localhost:4200

@@ -17,89 +17,59 @@ import { Project, Board, Task, Member } from '../../../core/models';
   selector: 'app-project-detail',
   standalone: true,
   imports: [
-    CommonModule,
-    TranslateModule,
-    RouterLink,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTabsModule,
-    MatChipsModule,
-    MatProgressSpinnerModule
+    CommonModule, TranslateModule, RouterLink,
+    MatCardModule, MatButtonModule, MatIconModule,
+    MatTabsModule, MatChipsModule, MatProgressSpinnerModule
   ],
   template: `
     <div class="project-detail">
       @if (loading()) {
         <div class="loading-state">
-          <mat-spinner diameter="48"></mat-spinner>
+          <mat-spinner diameter="40"></mat-spinner>
           <p>{{ 'projectDetail.loadingProject' | translate }}</p>
         </div>
       } @else if (project()) {
-        <!-- Project Header -->
-        <div class="project-header cirquetask-card">
-          <div class="header-top">
-            <div class="project-info">
-              <span class="color-dot" [style.background-color]="project()!.color"></span>
-              <div>
-                <h1>{{ project()!.name }}</h1>
-                @if (project()!.description) {
-                  <p class="description">{{ project()!.description }}</p>
-                }
-              </div>
+        <div class="detail-header">
+          <div class="header-info">
+            <div class="header-row">
+              <span class="color-dot" [style.background]="project()!.color"></span>
+              <h1>{{ project()!.name }}</h1>
+              <span class="prefix-tag">{{ project()!.prefix }}</span>
             </div>
-            @if (defaultBoardId()) {
-              <a
-                [routerLink]="['/projects', projectId(), 'board', defaultBoardId()]"
-                mat-raised-button
-                color="primary"
-              >
-                <mat-icon>dashboard</mat-icon>
-                {{ 'projectDetail.goToBoard' | translate }}
-              </a>
+            @if (project()!.description) {
+              <p class="header-desc">{{ project()!.description }}</p>
             }
+            <div class="header-meta">
+              <span class="meta"><mat-icon>people_outline</mat-icon>{{ project()!.memberCount }} {{ 'projectDetail.members' | translate }}</span>
+              <span class="meta"><mat-icon>task_alt</mat-icon>{{ project()!.taskCount }} {{ 'projectDetail.tasks' | translate }}</span>
+            </div>
           </div>
-          <div class="header-meta">
-            <span class="meta-item">
-              <mat-icon>people</mat-icon>
-              {{ project()!.memberCount }} {{ 'projectDetail.members' | translate }}
-            </span>
-            <span class="meta-item">
-              <mat-icon>task_alt</mat-icon>
-              {{ project()!.taskCount }} {{ 'projectDetail.tasks' | translate }}
-            </span>
-            <span class="prefix">{{ project()!.prefix }}</span>
-          </div>
+          @if (defaultBoardId()) {
+            <a [routerLink]="['/projects', projectId(), 'board', defaultBoardId()]" mat-flat-button color="primary">
+              <mat-icon>view_kanban</mat-icon>
+              {{ 'projectDetail.goToBoard' | translate }}
+            </a>
+          }
         </div>
 
-        <!-- Tabs -->
-        <mat-tab-group class="project-tabs" animationDuration="200ms">
+        <mat-tab-group class="detail-tabs" animationDuration="200ms">
           <mat-tab [label]="'projectDetail.tabBoards' | translate">
-            <div class="tab-content">
+            <div class="tab-body">
               @if (boards().length === 0) {
-                <div class="empty-state cirquetask-card">
-                  <mat-icon>dashboard</mat-icon>
-                  <p>{{ 'projectDetail.noBoards' | translate }}</p>
-                </div>
+                <div class="tab-empty"><mat-icon>view_kanban</mat-icon><p>{{ 'projectDetail.noBoards' | translate }}</p></div>
               } @else {
                 <div class="boards-grid">
                   @for (board of boards(); track board.id) {
-                    <a
-                      [routerLink]="['/projects', projectId(), 'board', board.id]"
-                      class="board-card cirquetask-card"
-                    >
-                      <div class="board-header">
+                    <a [routerLink]="['/projects', projectId(), 'board', board.id]" class="board-item">
+                      <div class="board-top">
                         <mat-icon>view_kanban</mat-icon>
                         <h3>{{ board.name }}</h3>
                         @if (board.isDefault) {
                           <mat-chip class="default-chip">{{ 'projectDetail.default' | translate }}</mat-chip>
                         }
                       </div>
-                      @if (board.description) {
-                        <p class="board-desc">{{ board.description }}</p>
-                      }
-                      <div class="board-meta">
-                        {{ board.columns?.length || 0 }} {{ 'projectDetail.columns' | translate }}
-                      </div>
+                      @if (board.description) { <p class="board-desc">{{ board.description }}</p> }
+                      <span class="board-meta">{{ board.columns?.length || 0 }} {{ 'projectDetail.columns' | translate }}</span>
                     </a>
                   }
                 </div>
@@ -108,24 +78,17 @@ import { Project, Board, Task, Member } from '../../../core/models';
           </mat-tab>
 
           <mat-tab [label]="'projectDetail.tabTasks' | translate">
-            <div class="tab-content">
+            <div class="tab-body">
               @if (tasks().length === 0) {
-                <div class="empty-state cirquetask-card">
-                  <mat-icon>task_alt</mat-icon>
-                  <p>{{ 'projectDetail.noTasks' | translate }}</p>
-                </div>
+                <div class="tab-empty"><mat-icon>task_alt</mat-icon><p>{{ 'projectDetail.noTasks' | translate }}</p></div>
               } @else {
-                <div class="tasks-list cirquetask-card">
+                <div class="task-table">
                   @for (task of tasks(); track task.id) {
                     <div class="task-row">
-                      <div class="task-priority-dot" [class]="'priority-' + task.priority.toLowerCase()"></div>
-                      <div class="task-info">
-                        <span class="task-key">{{ task.taskKey }}</span>
-                        <span class="task-title">{{ task.title }}</span>
-                      </div>
-                      <mat-chip [class]="'status-' + task.status.toLowerCase()">
-                        {{ 'common.status.' + task.status | translate }}
-                      </mat-chip>
+                      <span class="priority-dot" [class]="'priority-' + task.priority.toLowerCase()"></span>
+                      <span class="task-key">{{ task.taskKey }}</span>
+                      <span class="task-title">{{ task.title }}</span>
+                      <mat-chip [class]="'status-' + task.status.toLowerCase()">{{ 'common.status.' + task.status | translate }}</mat-chip>
                     </div>
                   }
                 </div>
@@ -134,22 +97,17 @@ import { Project, Board, Task, Member } from '../../../core/models';
           </mat-tab>
 
           <mat-tab [label]="'projectDetail.tabMembers' | translate">
-            <div class="tab-content">
+            <div class="tab-body">
               @if (members().length === 0) {
-                <div class="empty-state cirquetask-card">
-                  <mat-icon>people</mat-icon>
-                  <p>{{ 'projectDetail.noMembers' | translate }}</p>
-                </div>
+                <div class="tab-empty"><mat-icon>people_outline</mat-icon><p>{{ 'projectDetail.noMembers' | translate }}</p></div>
               } @else {
-                <div class="members-list cirquetask-card">
+                <div class="members-table">
                   @for (member of members(); track member.id) {
                     <div class="member-row">
-                      <div class="member-avatar">
-                        {{ getInitials(member) }}
-                      </div>
+                      <div class="member-avatar">{{ getInitials(member) }}</div>
                       <div class="member-info">
                         <span class="member-name">{{ member.firstName }} {{ member.lastName }}</span>
-                        <span class="member-email text-muted">{{ member.email }}</span>
+                        <span class="member-email">{{ member.email }}</span>
                       </div>
                       <mat-chip class="role-chip">{{ member.role }}</mat-chip>
                     </div>
@@ -160,314 +118,127 @@ import { Project, Board, Task, Member } from '../../../core/models';
           </mat-tab>
         </mat-tab-group>
       } @else {
-        <div class="error-state cirquetask-card">
-          <mat-icon>error_outline</mat-icon>
+        <div class="error-state">
+          <div class="error-icon"><mat-icon>error_outline</mat-icon></div>
           <h3>{{ 'projectDetail.notFound' | translate }}</h3>
-          <p class="text-muted">{{ 'projectDetail.notFoundDesc' | translate }}</p>
+          <p>{{ 'projectDetail.notFoundDesc' | translate }}</p>
         </div>
       }
     </div>
   `,
   styles: [`
-    .project-detail { max-width: 1200px; margin: 0 auto; }
+    .project-detail { max-width: 1100px; margin: 0 auto; }
 
     .loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 64px 24px;
-      gap: 16px;
-      color: var(--text-secondary);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-16); gap: var(--space-4); color: var(--text-secondary);
     }
 
-    .project-header {
-      margin-bottom: 24px;
+    .detail-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-6);
+      background: var(--bg-card); border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg); padding: var(--space-6);
+      margin-bottom: var(--space-6); flex-wrap: wrap;
     }
 
-    .header-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 24px;
-      flex-wrap: wrap;
+    .header-row {
+      display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);
+    }
+    .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .header-row h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+    .prefix-tag {
+      font-size: 0.6875rem; font-weight: 700; color: var(--primary);
+      background: var(--primary-surface); padding: 2px 8px; border-radius: var(--radius-xs); font-family: monospace;
     }
 
-    .project-info {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
+    .header-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: var(--space-4); }
+    .header-meta { display: flex; gap: var(--space-5); }
+    .meta {
+      display: flex; align-items: center; gap: var(--space-1);
+      font-size: 0.8125rem; color: var(--text-tertiary);
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
     }
 
-    .color-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
-
-    .project-info h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 0 0 4px 0;
-    }
-
-    .description {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin: 0;
-      line-height: 1.5;
-    }
-
-    .header-meta {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    .meta-item mat-icon {
-      font-size: 18px;
-      width: 18px;
-      min-width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-
-    .prefix {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--primary);
-      margin-left: auto;
-    }
-
-    .project-tabs {
+    .detail-tabs {
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
 
-    .tab-content {
-      padding: 24px;
-      min-height: 200px;
+    .tab-body { padding: var(--space-6); min-height: 200px; }
+
+    .tab-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-12) 0; color: var(--text-muted);
+      mat-icon { font-size: 36px; width: 36px; height: 36px; opacity: 0.2; margin-bottom: var(--space-2); }
+      p { font-size: 0.875rem; }
     }
 
-    .boards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+    .boards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4); }
+    .board-item {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-5);
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+      &:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
     }
-
-    .board-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .board-top {
+      display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);
+      mat-icon { color: var(--primary); font-size: 20px; width: 20px; height: 20px; }
+      h3 { flex: 1; font-size: 0.9375rem; font-weight: 600; }
     }
+    .default-chip { font-size: 0.625rem !important; }
+    .board-desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: var(--space-3); }
+    .board-meta { font-size: 0.75rem; color: var(--text-muted); }
 
-    .board-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .board-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .board-header mat-icon {
-      color: var(--primary);
-      font-size: 24px;
-      width: 24px;
-      min-width: 24px;
-      height: 24px;
-      flex-shrink: 0;
-    }
-
-    .board-header h3 {
-      flex: 1;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0;
-    }
-
-    .default-chip {
-      font-size: 0.7rem;
-    }
-
-    .board-desc {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin: 0 0 12px 0;
-      line-height: 1.4;
-    }
-
-    .board-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .tasks-list {
-      padding: 0;
-    }
-
+    .task-table, .members-table { display: flex; flex-direction: column; }
     .task-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 24px;
-      border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-secondary);
+      &:last-child { border-bottom: none; }
     }
-
-    .task-row:last-child {
-      border-bottom: none;
-    }
-
-    .task-priority-dot {
-      width: 8px;
-      min-width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-      flex-shrink: 0;
-    }
-
-    .task-info {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .task-key {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .task-title {
-      font-size: 0.9rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .members-list {
-      padding: 0;
-    }
+    .priority-dot { width: 7px; min-width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .task-key { font-size: 0.6875rem; color: var(--text-muted); font-weight: 600; font-family: monospace; flex-shrink: 0; }
+    .task-title { flex: 1; min-width: 0; font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     .member-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-4); border-bottom: 1px solid var(--border-secondary);
+      &:last-child { border-bottom: none; }
     }
-
-    .member-row:last-child {
-      border-bottom: none;
-    }
-
     .member-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; flex-shrink: 0;
     }
+    .member-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+    .member-name { font-weight: 500; font-size: 0.875rem; color: var(--text-primary); }
+    .member-email { font-size: 0.75rem; color: var(--text-muted); }
 
-    .member-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .error-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-16); text-align: center;
+      background: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius-lg);
     }
-
-    .member-name {
-      font-weight: 500;
-      color: var(--text-primary);
+    .error-icon {
+      width: 64px; height: 64px; border-radius: var(--radius-xl); background: var(--danger-surface);
+      display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-5);
+      mat-icon { font-size: 28px; width: 28px; height: 28px; color: var(--danger); }
     }
+    .error-state h3 { font-size: 1.0625rem; font-weight: 600; margin-bottom: var(--space-2); }
+    .error-state p { color: var(--text-secondary); }
 
-    .member-email {
-      font-size: 0.8rem;
-    }
-
-    .role-chip {
-      font-size: 0.75rem;
-    }
-
-    .empty-state, .error-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
-      text-align: center;
-    }
-
-    .empty-state > mat-icon, .error-state > mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--text-muted);
-      opacity: 0.5;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .empty-state p, .error-state p {
-      margin: 0;
-    }
-
-    .error-state h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 8px 0;
-    }
-
-    .status-open { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-    .status-in_progress { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-    .status-in_review { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-    .status-done { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-    .status-cancelled { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+    .status-open { background: rgba(59,130,246,0.12) !important; color: #3b82f6 !important; }
+    .status-in_progress { background: rgba(245,158,11,0.12) !important; color: #d97706 !important; }
+    .status-in_review { background: rgba(139,92,246,0.12) !important; color: #8b5cf6 !important; }
+    .status-done { background: rgba(16,185,129,0.12) !important; color: #10b981 !important; }
+    .status-cancelled { background: rgba(148,163,184,0.12) !important; color: #94a3b8 !important; }
 
     @media (max-width: 768px) {
-      .header-top {
-        flex-direction: column;
-      }
-
-      .header-meta {
-        flex-wrap: wrap;
-      }
-
-      .prefix {
-        margin-left: 0;
-        width: 100%;
-      }
+      .detail-header { flex-direction: column; }
+      .header-meta { flex-wrap: wrap; }
     }
   `]
 })
@@ -484,7 +255,6 @@ export class ProjectDetailComponent implements OnInit {
   loading = signal(true);
 
   projectId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
-
   defaultBoardId = computed(() => {
     const boardsList = this.boards();
     const defaultBoard = boardsList.find(b => b.isDefault);
@@ -493,37 +263,20 @@ export class ProjectDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.projectId();
-    if (!id) {
-      this.loading.set(false);
-      return;
-    }
+    if (!id) { this.loading.set(false); return; }
 
     this.projectService.getProject(id).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.project.set(res.data);
-        }
-        this.loading.set(false);
-      },
+      next: (res) => { if (res.success) this.project.set(res.data); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
-
     this.boardService.getProjectBoards(id).subscribe({
-      next: (res) => {
-        if (res.success) this.boards.set(res.data);
-      }
+      next: (res) => { if (res.success) this.boards.set(res.data); }
     });
-
     this.taskService.getProjectTasks(id).subscribe({
-      next: (res) => {
-        if (res.success) this.tasks.set(res.data);
-      }
+      next: (res) => { if (res.success) this.tasks.set(res.data); }
     });
-
     this.projectService.getMembers(id).subscribe({
-      next: (res) => {
-        if (res.success) this.members.set(res.data);
-      }
+      next: (res) => { if (res.success) this.members.set(res.data); }
     });
   }
 

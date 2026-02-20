@@ -1,5 +1,6 @@
 package com.cirquetask.model.entity;
 
+import com.cirquetask.model.enums.Plan;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -46,6 +47,23 @@ public class User {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan", nullable = false, length = 20)
+    @Builder.Default
+    private Plan plan = Plan.FREE;
+
+    @Column(name = "stripe_customer_id", length = 255)
+    private String stripeCustomerId;
+
+    @Column(name = "subscription_id", length = 255)
+    private String subscriptionId;
+
+    @Column(name = "subscription_status", length = 50)
+    private String subscriptionStatus;
+
+    @Column(name = "current_period_end")
+    private LocalDateTime currentPeriodEnd;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

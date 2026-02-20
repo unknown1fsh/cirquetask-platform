@@ -4,7 +4,9 @@ import com.cirquetask.model.dto.ApiResponse;
 import com.cirquetask.model.dto.CustomFieldDefinitionDto;
 import com.cirquetask.model.dto.CustomFieldValueDto;
 import com.cirquetask.model.enums.CustomFieldType;
+import com.cirquetask.model.enums.Feature;
 import com.cirquetask.service.CustomFieldService;
+import com.cirquetask.service.PlanLimitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.Map;
 public class CustomFieldController {
 
     private final CustomFieldService customFieldService;
+    private final PlanLimitService planLimitService;
 
     @PostMapping("/projects/{projectId}/custom-fields")
     @Operation(summary = "Create a custom field for a project")
@@ -29,6 +32,7 @@ public class CustomFieldController {
     public ResponseEntity<ApiResponse<CustomFieldDefinitionDto>> createField(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> body) {
+        planLimitService.requireProjectFeature(projectId, Feature.CUSTOM_FIELDS);
         String name = (String) body.get("name");
         CustomFieldType type = CustomFieldType.valueOf((String) body.get("fieldType"));
         String description = (String) body.get("description");
@@ -44,6 +48,7 @@ public class CustomFieldController {
     @GetMapping("/projects/{projectId}/custom-fields")
     @Operation(summary = "Get all custom fields for a project")
     public ResponseEntity<ApiResponse<List<CustomFieldDefinitionDto>>> getProjectFields(@PathVariable Long projectId) {
+        planLimitService.requireProjectFeature(projectId, Feature.CUSTOM_FIELDS);
         List<CustomFieldDefinitionDto> fields = customFieldService.getProjectFields(projectId);
         return ResponseEntity.ok(ApiResponse.success(fields));
     }
@@ -51,6 +56,7 @@ public class CustomFieldController {
     @DeleteMapping("/custom-fields/{fieldId}")
     @Operation(summary = "Delete a custom field")
     public ResponseEntity<ApiResponse<Void>> deleteField(@PathVariable Long fieldId) {
+        planLimitService.requireCustomFieldDefinitionProjectFeature(fieldId, Feature.CUSTOM_FIELDS);
         customFieldService.deleteField(fieldId);
         return ResponseEntity.ok(ApiResponse.success("Custom field deleted", null));
     }
@@ -61,6 +67,7 @@ public class CustomFieldController {
             @PathVariable Long taskId,
             @PathVariable Long definitionId,
             @RequestBody Map<String, String> body) {
+        planLimitService.requireTaskProjectFeature(taskId, Feature.CUSTOM_FIELDS);
         String value = body.get("value");
         CustomFieldValueDto fieldValue = customFieldService.setFieldValue(taskId, definitionId, value);
         return ResponseEntity.ok(ApiResponse.success("Field value set", fieldValue));
@@ -69,6 +76,7 @@ public class CustomFieldController {
     @GetMapping("/tasks/{taskId}/custom-fields")
     @Operation(summary = "Get all custom field values for a task")
     public ResponseEntity<ApiResponse<List<CustomFieldValueDto>>> getTaskFieldValues(@PathVariable Long taskId) {
+        planLimitService.requireTaskProjectFeature(taskId, Feature.CUSTOM_FIELDS);
         List<CustomFieldValueDto> values = customFieldService.getTaskFieldValues(taskId);
         return ResponseEntity.ok(ApiResponse.success(values));
     }

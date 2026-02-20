@@ -21,26 +21,37 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
     MatProgressSpinnerModule, MatSnackBarModule, TranslateModule
   ],
   template: `
-    <div class="auth-container">
-      <div class="auth-left">
-        <div class="brand">
-          <div class="logo">
-            <mat-icon class="logo-icon">bolt</mat-icon>
+    <div class="auth-page">
+      <div class="auth-hero">
+        <div class="hero-content">
+          <div class="hero-brand">
+            <div class="logo-mark"><mat-icon>bolt</mat-icon></div>
+            <h1>CirqueTask</h1>
+            <p>{{ 'auth.register.brandSubtitle' | translate }}</p>
           </div>
-          <h1>CirqueTask</h1>
-          <p>{{ 'auth.register.brandSubtitle' | translate }}</p>
-        </div>
-        <div class="stats">
-          <div class="stat"><strong>10K+</strong><span>{{ 'auth.register.statTeams' | translate }}</span></div>
-          <div class="stat"><strong>50K+</strong><span>{{ 'auth.register.statProjects' | translate }}</span></div>
-          <div class="stat"><strong>1M+</strong><span>{{ 'auth.register.statTasks' | translate }}</span></div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">10K+</span>
+              <span class="stat-label">{{ 'auth.register.statTeams' | translate }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">50K+</span>
+              <span class="stat-label">{{ 'auth.register.statProjects' | translate }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">1M+</span>
+              <span class="stat-label">{{ 'auth.register.statTasks' | translate }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="auth-right">
-        <div class="auth-form-wrapper">
-          <h2>{{ 'auth.register.title' | translate }}</h2>
-          <p class="subtitle">{{ 'auth.register.subtitle' | translate }}</p>
+      <div class="auth-form-side">
+        <div class="form-container">
+          <div class="form-header">
+            <h2>{{ 'auth.register.title' | translate }}</h2>
+            <p>{{ 'auth.register.subtitle' | translate }}</p>
+          </div>
 
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="name-row">
@@ -54,7 +65,6 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
                   <mat-error>{{ registerForm.get('firstName')?.getError('serverError') }}</mat-error>
                 }
               </mat-form-field>
-
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'auth.register.lastName' | translate }}</mat-label>
                 <input matInput formControlName="lastName">
@@ -70,7 +80,7 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>{{ 'auth.register.email' | translate }}</mat-label>
               <input matInput formControlName="email" type="email">
-              <mat-icon matPrefix>email</mat-icon>
+              <mat-icon matPrefix>mail_outline</mat-icon>
               @if (registerForm.get('email')?.hasError('email')) {
                 <mat-error>{{ 'auth.register.emailInvalid' | translate }}</mat-error>
               }
@@ -82,7 +92,7 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>{{ 'auth.register.password' | translate }}</mat-label>
               <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'">
-              <mat-icon matPrefix>lock</mat-icon>
+              <mat-icon matPrefix>lock_outline</mat-icon>
               <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
                 <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
@@ -103,51 +113,77 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             </button>
           </form>
 
-          <p class="auth-link">
-            {{ 'auth.register.hasAccount' | translate }} <a routerLink="/auth/login">{{ 'auth.register.signIn' | translate }}</a>
-          </p>
+          <div class="auth-footer">
+            {{ 'auth.register.hasAccount' | translate }}
+            <a routerLink="/auth/login">{{ 'auth.register.signIn' | translate }}</a>
+          </div>
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .auth-container { display: flex; min-height: 100vh; }
-    .auth-left {
+    .auth-page { display: flex; min-height: 100vh; }
+
+    .auth-hero {
       flex: 1;
-      background: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #3b82f6 100%);
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      padding: 48px; color: white;
-    }
-    .brand { text-align: center; margin-bottom: 48px; }
-    .logo {
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,0.2); border-radius: 20px;
+      background: linear-gradient(160deg, #4c1d95 0%, #6d28d9 40%, #7c3aed 100%);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px; backdrop-filter: blur(10px);
+      padding: var(--space-12); position: relative; overflow: hidden;
+      &::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(167,139,250,0.2) 0%, transparent 60%);
+      }
     }
-    .logo-icon { font-size: 40px; width: 40px; height: 40px; overflow: hidden; }
-    .brand h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; }
-    .brand p { opacity: 0.8; margin-top: 8px; font-size: 1.1rem; }
-    .stats { display: flex; gap: 32px; }
-    .stat {
+
+    .hero-content { position: relative; z-index: 1; color: white; max-width: 400px; }
+
+    .hero-brand { margin-bottom: var(--space-12); }
+    .logo-mark {
+      width: 56px; height: 56px; border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--space-5);
+      mat-icon { font-size: 28px; width: 28px; height: 28px; color: white; }
+    }
+    .hero-brand h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: var(--space-2); color: white; }
+    .hero-brand p { font-size: 1rem; opacity: 0.75; line-height: 1.5; }
+
+    .hero-stats {
+      display: flex; gap: var(--space-8);
+    }
+    .stat-item {
       text-align: center;
-      strong { display: block; font-size: 1.5rem; font-weight: 800; }
-      span { font-size: 0.875rem; opacity: 0.8; }
+      .stat-number { display: block; font-size: 1.5rem; font-weight: 800; }
+      .stat-label { font-size: 0.8125rem; opacity: 0.7; }
     }
-    .auth-right {
+
+    .auth-form-side {
       flex: 1; display: flex; align-items: center; justify-content: center;
-      background: var(--bg-primary); padding: 48px;
+      padding: var(--space-8); background: var(--bg-primary);
     }
-    .auth-form-wrapper { width: 100%; max-width: 420px; }
-    .auth-form-wrapper h2 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .subtitle { color: var(--text-secondary); margin-bottom: 32px; }
-    form { display: flex; flex-direction: column; gap: 4px; }
-    .name-row { display: flex; gap: 12px; }
-    .name-row mat-form-field { flex: 1; }
-    .submit-btn { width: 100%; height: 48px; font-size: 1rem; font-weight: 600; border-radius: 12px; margin-top: 8px; }
-    .auth-link { text-align: center; margin-top: 24px; color: var(--text-secondary); a { color: var(--primary); font-weight: 600; } }
-    @media (max-width: 768px) { .auth-left { display: none; } .auth-right { padding: 24px; } }
+
+    .form-container { width: 100%; max-width: 400px; }
+
+    .form-header {
+      margin-bottom: var(--space-8);
+      h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: var(--space-2); }
+      p { color: var(--text-secondary); font-size: 0.9375rem; }
+    }
+
+    form { display: flex; flex-direction: column; gap: var(--space-1); }
+    .name-row { display: flex; gap: var(--space-3); mat-form-field { flex: 1; } }
+    .submit-btn { width: 100%; height: 44px; font-size: 0.9375rem; font-weight: 600; border-radius: var(--radius) !important; margin-top: var(--space-2); }
+
+    .auth-footer {
+      text-align: center; margin-top: var(--space-6); font-size: 0.875rem; color: var(--text-secondary);
+      a { color: var(--primary); font-weight: 600; margin-left: 4px; &:hover { text-decoration: underline; } }
+    }
+
+    @media (max-width: 768px) {
+      .auth-hero { display: none; }
+      .auth-form-side { padding: var(--space-6); }
+    }
   `]
 })
 export class RegisterComponent {

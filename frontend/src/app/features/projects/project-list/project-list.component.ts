@@ -18,42 +18,33 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
   selector: 'app-project-list',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterLink,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatChipsModule,
-    ReactiveFormsModule,
-    TranslateModule
+    CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule,
+    MatDialogModule, MatFormFieldModule, MatInputModule, MatChipsModule,
+    ReactiveFormsModule, TranslateModule
   ],
   template: `
-    <div class="project-list">
+    <div class="projects-page">
       <div class="page-header">
-        <div class="header-content">
+        <div class="header-left">
           <h1>{{ 'projects.title' | translate }}</h1>
-          <span class="count-badge">{{ projects().length }}</span>
+          <span class="count-pill">{{ projects().length }}</span>
         </div>
-        <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <button mat-flat-button color="primary" (click)="openCreateDialog()">
           <mat-icon>add</mat-icon>
           {{ 'projects.newProject' | translate }}
         </button>
       </div>
 
       @if (loading()) {
-        <div class="loading-state">
-          <mat-icon>hourglass_empty</mat-icon>
-          <p>{{ 'projects.loadingProjects' | translate }}</p>
+        <div class="loading-placeholder">
+          <div class="skeleton-card" *ngFor="let i of [1,2,3]"></div>
         </div>
       } @else if (projects().length === 0) {
-        <div class="empty-state cirquetask-card">
-          <mat-icon>folder_open</mat-icon>
+        <div class="empty-state">
+          <div class="empty-icon"><mat-icon>folder_open</mat-icon></div>
           <h3>{{ 'projects.noProjects' | translate }}</h3>
-          <p class="text-muted">{{ 'projects.noProjectsHint' | translate }}</p>
-          <button mat-raised-button color="primary" (click)="openCreateDialog()">
+          <p>{{ 'projects.noProjectsHint' | translate }}</p>
+          <button mat-flat-button color="primary" (click)="openCreateDialog()">
             <mat-icon>add</mat-icon>
             {{ 'projects.newProject' | translate }}
           </button>
@@ -61,27 +52,21 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
       } @else {
         <div class="project-grid">
           @for (project of projects(); track project.id) {
-            <a [routerLink]="['/projects', project.id]" class="project-card cirquetask-card">
-              <div class="card-header">
-                <span class="color-dot" [style.background-color]="project.color"></span>
+            <a [routerLink]="['/projects', project.id]" class="project-card">
+              <div class="card-top">
+                <span class="color-bar" [style.background]="project.color"></span>
                 <h3>{{ project.name }}</h3>
               </div>
               @if (project.description) {
-                <p class="description">{{ project.description }}</p>
+                <p class="card-desc">{{ project.description }}</p>
               }
-              <div class="card-meta">
-                <span class="meta-item">
-                  <mat-icon>people</mat-icon>
-                  {{ project.memberCount }}
-                </span>
-                <span class="meta-item">
-                  <mat-icon>task_alt</mat-icon>
-                  {{ project.taskCount }}
-                </span>
+              <div class="card-stats">
+                <span class="stat"><mat-icon>people_outline</mat-icon>{{ project.memberCount }}</span>
+                <span class="stat"><mat-icon>task_alt</mat-icon>{{ project.taskCount }}</span>
               </div>
-              <div class="card-footer">
-                <span class="prefix">{{ project.prefix }}</span>
-                <span class="date text-muted">{{ formatDate(project.createdAt) }}</span>
+              <div class="card-bottom">
+                <span class="prefix-tag">{{ project.prefix }}</span>
+                <span class="date">{{ formatDate(project.createdAt) }}</span>
               </div>
             </a>
           }
@@ -90,178 +75,99 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
     </div>
   `,
   styles: [`
-    .project-list { max-width: 1400px; margin: 0 auto; }
+    .projects-page { max-width: var(--content-max-width); margin: 0 auto; }
 
     .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);
     }
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header-content h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 0;
-    }
-
-    .count-badge {
-      background: var(--primary);
-      color: white;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 12px;
+    .header-left { display: flex; align-items: center; gap: var(--space-3); }
+    .header-left h1 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; }
+    .count-pill {
+      background: var(--primary-surface); color: var(--primary);
+      font-size: 0.6875rem; font-weight: 700;
+      padding: 3px 10px; border-radius: var(--radius-full);
     }
 
     .project-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);
     }
 
     .project-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex; flex-direction: column;
+      background: var(--bg-card); border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      text-decoration: none; color: inherit;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
       cursor: pointer;
+      &:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
     }
 
-    .project-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+    .card-top {
+      display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);
+    }
+    .color-bar { width: 4px; height: 24px; border-radius: 2px; flex-shrink: 0; }
+    .card-top h3 {
+      font-size: 0.9375rem; font-weight: 600; color: var(--text-primary);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
     }
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+    .card-desc {
+      font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5;
+      margin-bottom: var(--space-4);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    .color-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    .card-stats {
+      display: flex; gap: var(--space-4); margin-bottom: var(--space-4);
+    }
+    .stat {
+      display: flex; align-items: center; gap: var(--space-1);
+      font-size: 0.75rem; color: var(--text-tertiary);
+      mat-icon { font-size: 15px; width: 15px; height: 15px; }
     }
 
-    .card-header h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .card-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: var(--space-3); border-top: 1px solid var(--border-secondary);
+    }
+    .prefix-tag {
+      font-size: 0.6875rem; font-weight: 700; color: var(--primary);
+      background: var(--primary-surface); padding: 2px 8px; border-radius: var(--radius-xs);
+      font-family: monospace;
+    }
+    .date { font-size: 0.6875rem; color: var(--text-muted); }
+
+    .loading-placeholder { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+    .skeleton-card {
+      height: 160px; border-radius: var(--radius-lg);
+      background: var(--bg-tertiary); animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
-    .description {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin: 0 0 16px 0;
-      line-height: 1.5;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-16) var(--space-6); text-align: center;
+      background: var(--bg-card); border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
     }
-
-    .card-meta {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 12px;
+    .empty-icon {
+      width: 64px; height: 64px; border-radius: var(--radius-xl);
+      background: var(--bg-tertiary);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--space-5);
+      mat-icon { font-size: 28px; width: 28px; height: 28px; color: var(--text-muted); }
     }
+    .empty-state h3 { font-size: 1.0625rem; font-weight: 600; margin-bottom: var(--space-2); }
+    .empty-state p { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: var(--space-6); }
 
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    .meta-item mat-icon {
-      font-size: 16px;
-      width: 16px;
-      min-width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .prefix {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .date {
-      font-size: 0.75rem;
-    }
-
-    .loading-state, .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 64px 24px;
-      text-align: center;
-    }
-
-    .loading-state > mat-icon, .empty-state > mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--text-muted);
-      opacity: 0.5;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .empty-state h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 8px 0;
-    }
-
-    .empty-state p {
-      margin: 0 0 24px 0;
-    }
-
-    @media (max-width: 1024px) {
-      .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
+    @media (max-width: 1024px) { .project-grid, .loading-placeholder { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 640px) {
-      .project-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .page-header {
-        flex-direction: column;
-        align-items: stretch;
-      }
+      .project-grid, .loading-placeholder { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column; align-items: stretch; }
     }
   `]
 })
@@ -281,9 +187,7 @@ export class ProjectListComponent implements OnInit {
     this.loading.set(true);
     this.projectService.getProjects().subscribe({
       next: (res) => {
-        if (res.success) {
-          this.projects.set(res.data);
-        }
+        if (res.success) this.projects.set(res.data);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
@@ -292,14 +196,10 @@ export class ProjectListComponent implements OnInit {
 
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(CreateProjectDialogComponent, {
-      width: '480px',
-      maxWidth: '95vw'
+      width: '480px', maxWidth: '95vw'
     });
-
     dialogRef.afterClosed().subscribe((created) => {
-      if (created) {
-        this.loadProjects();
-      }
+      if (created) this.loadProjects();
     });
   }
 
@@ -316,29 +216,19 @@ export class ProjectListComponent implements OnInit {
   }
 }
 
-// Create Project Dialog Component (inline)
 @Component({
   selector: 'app-create-project-dialog',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    TranslateModule
+    CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
+    MatInputModule, MatButtonModule, MatIconModule, TranslateModule
   ],
   template: `
-    <div class="create-dialog">
-      <div class="dialog-header">
+    <div class="dialog">
+      <div class="dialog-top">
         <h2>{{ 'projects.createDialog.title' | translate }}</h2>
-        <button mat-icon-button (click)="dialogRef.close()">
-          <mat-icon>close</mat-icon>
-        </button>
+        <button class="close-btn" (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
       </div>
-
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="dialog-body">
           <mat-form-field appearance="outline" class="w-full">
@@ -351,7 +241,6 @@ export class ProjectListComponent implements OnInit {
               <mat-error>{{ form.get('name')?.getError('serverError') }}</mat-error>
             }
           </mat-form-field>
-
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'projects.createDialog.description' | translate }}</mat-label>
             <textarea matInput formControlName="description" rows="3" [placeholder]="'projects.createDialog.descriptionPlaceholder' | translate"></textarea>
@@ -359,7 +248,6 @@ export class ProjectListComponent implements OnInit {
               <mat-error>{{ form.get('description')?.getError('serverError') }}</mat-error>
             }
           </mat-form-field>
-
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'projects.createDialog.prefix' | translate }}</mat-label>
             <input matInput formControlName="prefix" [placeholder]="'projects.createDialog.prefixPlaceholder' | translate" maxlength="6">
@@ -371,104 +259,49 @@ export class ProjectListComponent implements OnInit {
               <mat-error>{{ form.get('prefix')?.getError('serverError') }}</mat-error>
             }
           </mat-form-field>
-
-          <div class="color-picker-field">
+          <div class="color-field">
             <label>{{ 'projects.createDialog.color' | translate }}</label>
-            <div class="color-picker-row">
-              <input
-                type="color"
-                [value]="form.get('color')?.value"
-                (input)="form.patchValue({ color: $any($event.target).value })"
-                class="color-input"
-              >
-              <span class="color-value">{{ form.get('color')?.value }}</span>
+            <div class="color-row">
+              <input type="color" [value]="form.get('color')?.value" (input)="form.patchValue({ color: $any($event.target).value })" class="color-input">
+              <span class="color-hex">{{ form.get('color')?.value }}</span>
             </div>
           </div>
         </div>
-
-        <div class="dialog-actions">
+        <div class="dialog-footer">
           <button mat-button type="button" (click)="dialogRef.close()">{{ 'common.cancel' | translate }}</button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || submitting()">
-            @if (submitting()) {
-              {{ 'projects.createDialog.creating' | translate }}
-            } @else {
-              {{ 'projects.createDialog.createProject' | translate }}
-            }
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || submitting()">
+            {{ submitting() ? ('projects.createDialog.creating' | translate) : ('projects.createDialog.createProject' | translate) }}
           </button>
         </div>
       </form>
     </div>
   `,
   styles: [`
-    .create-dialog { padding: 0; }
-
-    .dialog-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border-color);
+    .dialog-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border-primary);
+      h2 { font-size: 1.0625rem; font-weight: 600; }
     }
-
-    .dialog-header h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0;
+    .close-btn {
+      width: 32px; height: 32px; border-radius: var(--radius);
+      border: none; background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-tertiary);
+      &:hover { background: var(--hover-bg); }
+      mat-icon { font-size: 20px; width: 20px; height: 20px; }
     }
-
-    .dialog-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .w-full { width: 100%; }
-
-    .color-picker-field label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-
-    .color-picker-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .color-input {
-      width: 48px;
-      height: 36px;
-      padding: 2px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      background: var(--bg-card);
-    }
-
-    .color-value {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 16px 24px;
-      border-top: 1px solid var(--border-color);
-    }
+    .dialog-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+    .color-field label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: var(--space-2); }
+    .color-row { display: flex; align-items: center; gap: var(--space-3); }
+    .color-input { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--border-primary); border-radius: var(--radius-sm); cursor: pointer; }
+    .color-hex { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
+    .dialog-footer { display: flex; justify-content: flex-end; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border-primary); }
   `]
 })
 export class CreateProjectDialogComponent {
   private projectService = inject(ProjectService);
   private fb = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
-
   dialogRef = inject(MatDialogRef<CreateProjectDialogComponent>);
   submitting = signal(false);
 
@@ -481,20 +314,16 @@ export class CreateProjectDialogComponent {
 
   onSubmit(): void {
     if (this.form.invalid) return;
-
     const request: ProjectRequest = {
       name: this.form.value.name,
       description: this.form.value.description || undefined,
       prefix: this.form.value.prefix.toUpperCase(),
       color: this.form.value.color
     };
-
     this.submitting.set(true);
     this.projectService.createProject(request).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.dialogRef.close(true);
-        }
+        if (res.success) this.dialogRef.close(true);
         this.submitting.set(false);
       },
       error: (err) => {

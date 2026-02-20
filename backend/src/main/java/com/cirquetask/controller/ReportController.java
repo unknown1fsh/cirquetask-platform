@@ -1,6 +1,11 @@
 package com.cirquetask.controller;
 
+import com.cirquetask.exception.ResourceNotFoundException;
+import com.cirquetask.model.entity.Sprint;
+import com.cirquetask.model.enums.Feature;
+import com.cirquetask.repository.SprintRepository;
 import com.cirquetask.security.SecurityUtils;
+import com.cirquetask.service.PlanLimitService;
 import com.cirquetask.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +25,8 @@ import java.time.LocalDate;
 public class ReportController {
 
     private final ReportService reportService;
+    private final PlanLimitService planLimitService;
+    private final SprintRepository sprintRepository;
 
     @GetMapping("/projects/{projectId}")
     @Operation(summary = "Generate project report")
@@ -28,6 +35,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "csv") String format) {
+        planLimitService.requireProjectFeature(projectId, Feature.REPORTS);
         byte[] report = reportService.generateProjectReport(projectId, startDate, endDate, format);
 
         return ResponseEntity.ok()
@@ -41,6 +49,9 @@ public class ReportController {
     public ResponseEntity<byte[]> generateSprintReport(
             @PathVariable Long sprintId,
             @RequestParam(defaultValue = "csv") String format) {
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
+        planLimitService.requireProjectFeature(sprint.getProject().getId(), Feature.REPORTS);
         byte[] report = reportService.generateSprintReport(sprintId, format);
 
         return ResponseEntity.ok()

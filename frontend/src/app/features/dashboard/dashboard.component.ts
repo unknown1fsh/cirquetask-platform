@@ -25,112 +25,115 @@ import { Dashboard, Task, ActivityLog } from '../../core/models';
       <div class="page-header">
         <div>
           <h1>{{ 'dashboard.welcome' | translate:{ name: authService.currentUser()?.firstName } }}</h1>
-          <p class="text-muted">{{ 'dashboard.subtitle' | translate }}</p>
+          <p class="header-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
+      <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(99,102,241,0.1); color: #6366f1;">
-            <mat-icon>folder</mat-icon>
-          </div>
-          <div class="stat-info">
+          <div class="stat-icon projects"><mat-icon>folder_open</mat-icon></div>
+          <div class="stat-body">
             <span class="stat-value">{{ dashboard()?.totalProjects || 0 }}</span>
             <span class="stat-label">{{ 'dashboard.projects' | translate }}</span>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
-            <mat-icon>task_alt</mat-icon>
-          </div>
-          <div class="stat-info">
+          <div class="stat-icon tasks"><mat-icon>task_alt</mat-icon></div>
+          <div class="stat-body">
             <span class="stat-value">{{ dashboard()?.totalTasks || 0 }}</span>
             <span class="stat-label">{{ 'dashboard.totalTasks' | translate }}</span>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(34,197,94,0.1); color: #22c55e;">
-            <mat-icon>check_circle</mat-icon>
-          </div>
-          <div class="stat-info">
+          <div class="stat-icon completed"><mat-icon>check_circle_outline</mat-icon></div>
+          <div class="stat-body">
             <span class="stat-value">{{ dashboard()?.completedTasks || 0 }}</span>
             <span class="stat-label">{{ 'dashboard.completed' | translate }}</span>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(239,68,68,0.1); color: #ef4444;">
-            <mat-icon>warning</mat-icon>
-          </div>
-          <div class="stat-info">
+          <div class="stat-icon overdue"><mat-icon>schedule</mat-icon></div>
+          <div class="stat-body">
             <span class="stat-value">{{ dashboard()?.overdueTasks || 0 }}</span>
             <span class="stat-label">{{ 'dashboard.overdue' | translate }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Charts Row -->
-      <div class="charts-grid">
-        <div class="cirquetask-card">
-          <h3>{{ 'dashboard.tasksByStatus' | translate }}</h3>
+      <div class="charts-row">
+        <div class="card">
+          <div class="card-title">{{ 'dashboard.tasksByStatus' | translate }}</div>
           @if (statusChartData) {
-            <canvas baseChart [data]="statusChartData" [options]="doughnutOptions" type="doughnut" height="250"></canvas>
+            <div class="chart-wrap">
+              <canvas baseChart [data]="statusChartData" [options]="doughnutOptions" type="doughnut" height="240"></canvas>
+            </div>
+          } @else {
+            <div class="empty-chart">
+              <mat-icon>pie_chart_outline</mat-icon>
+              <span>{{ 'dashboard.noTasks' | translate }}</span>
+            </div>
           }
         </div>
-        <div class="cirquetask-card">
-          <h3>{{ 'dashboard.tasksByPriority' | translate }}</h3>
+        <div class="card">
+          <div class="card-title">{{ 'dashboard.tasksByPriority' | translate }}</div>
           @if (priorityChartData) {
-            <canvas baseChart [data]="priorityChartData" [options]="barOptions" type="bar" height="250"></canvas>
+            <div class="chart-wrap">
+              <canvas baseChart [data]="priorityChartData" [options]="barOptions" type="bar" height="240"></canvas>
+            </div>
+          } @else {
+            <div class="empty-chart">
+              <mat-icon>bar_chart</mat-icon>
+              <span>{{ 'dashboard.noTasks' | translate }}</span>
+            </div>
           }
         </div>
       </div>
 
-      <!-- Bottom Section -->
-      <div class="bottom-grid">
-        <!-- My Tasks -->
-        <div class="cirquetask-card">
+      <div class="bottom-row">
+        <div class="card">
           <div class="card-header">
-            <h3>{{ 'dashboard.myTasks' | translate }}</h3>
-            <span class="badge">{{ dashboard()?.myTasks?.length || 0 }}</span>
+            <div class="card-title">{{ 'dashboard.myTasks' | translate }}</div>
+            <span class="count-pill">{{ dashboard()?.myTasks?.length || 0 }}</span>
           </div>
           @if (dashboard()?.myTasks?.length) {
-            @for (task of dashboard()!.myTasks!; track task.id) {
-              <div class="task-row">
-                <div class="task-priority-dot" [class]="'priority-' + task.priority.toLowerCase()"></div>
-                <div class="task-info">
+            <div class="task-list">
+              @for (task of dashboard()!.myTasks!; track task.id) {
+                <div class="task-item">
+                  <span class="priority-dot" [class]="'priority-' + task.priority.toLowerCase()"></span>
                   <span class="task-key">{{ task.taskKey }}</span>
-                  <span class="task-title truncate">{{ task.title }}</span>
+                  <span class="task-title">{{ task.title }}</span>
+                  <mat-chip [class]="'status-' + task.status.toLowerCase()">{{ 'common.status.' + task.status | translate }}</mat-chip>
                 </div>
-                <mat-chip [class]="'status-' + task.status.toLowerCase()">{{ 'common.status.' + task.status | translate }}</mat-chip>
-              </div>
-            }
+              }
+            </div>
           } @else {
-            <div class="empty-state">
+            <div class="empty-inline">
               <mat-icon>inbox</mat-icon>
-              <p>{{ 'dashboard.noTasks' | translate }}</p>
+              <span>{{ 'dashboard.noTasks' | translate }}</span>
             </div>
           }
         </div>
 
-        <!-- Recent Activity -->
-        <div class="cirquetask-card">
-          <h3>{{ 'dashboard.recentActivity' | translate }}</h3>
+        <div class="card">
+          <div class="card-title">{{ 'dashboard.recentActivity' | translate }}</div>
           @if (dashboard()?.recentActivities?.length) {
-            @for (activity of dashboard()!.recentActivities!.slice(0, 8); track activity.id) {
-              <div class="activity-row">
-                <div class="activity-icon">
-                  <mat-icon>{{ getActivityIcon(activity.action) }}</mat-icon>
+            <div class="activity-list">
+              @for (activity of dashboard()!.recentActivities!.slice(0, 8); track activity.id) {
+                <div class="activity-item">
+                  <div class="activity-dot">
+                    <mat-icon>{{ getActivityIcon(activity.action) }}</mat-icon>
+                  </div>
+                  <div class="activity-body">
+                    <span class="activity-text">{{ activity.description }}</span>
+                    <span class="activity-time">{{ formatTime(activity.createdAt) }}</span>
+                  </div>
                 </div>
-                <div class="activity-info">
-                  <p>{{ activity.description }}</p>
-                  <small class="text-muted">{{ formatTime(activity.createdAt) }}</small>
-                </div>
-              </div>
-            }
+              }
+            </div>
           } @else {
-            <div class="empty-state">
+            <div class="empty-inline">
               <mat-icon>history</mat-icon>
-              <p>{{ 'dashboard.noActivity' | translate }}</p>
+              <span>{{ 'dashboard.noActivity' | translate }}</span>
             </div>
           }
         </div>
@@ -138,82 +141,129 @@ import { Dashboard, Task, ActivityLog } from '../../core/models';
     </div>
   `,
   styles: [`
-    .dashboard { max-width: 1400px; margin: 0 auto; }
-    .page-header { margin-bottom: 24px; h1 { font-size: 1.5rem; font-weight: 700; } }
+    .dashboard { max-width: var(--content-max-width); margin: 0 auto; }
 
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+    .page-header {
+      margin-bottom: var(--space-6);
+      h1 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; }
+      .header-subtitle { color: var(--text-tertiary); font-size: 0.875rem; margin-top: var(--space-1); }
     }
+
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
     .stat-card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius); padding: 20px;
-      display: flex; align-items: center; gap: 16px;
-      box-shadow: var(--shadow-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex; align-items: center; gap: var(--space-4);
+      transition: box-shadow var(--transition-base);
+      &:hover { box-shadow: var(--shadow-sm); }
     }
+
     .stat-icon {
-      width: 48px; min-width: 48px; height: 48px; border-radius: 12px;
+      width: 44px; min-width: 44px; height: 44px;
+      border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      mat-icon { width: 24px; min-width: 24px; height: 24px; flex-shrink: 0; }
-    }
-    .stat-value { font-size: 1.5rem; font-weight: 800; display: block; }
-    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-
-    .charts-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
-      h3 { margin-bottom: 16px; font-weight: 600; }
+      mat-icon { font-size: 22px; width: 22px; height: 22px; }
+      &.projects { background: var(--primary-surface); mat-icon { color: var(--primary); } }
+      &.tasks { background: var(--info-surface); mat-icon { color: var(--info); } }
+      &.completed { background: var(--success-surface); mat-icon { color: var(--success); } }
+      &.overdue { background: var(--danger-surface); mat-icon { color: var(--danger); } }
     }
 
-    .bottom-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-      h3 { font-weight: 600; }
+    .stat-body { display: flex; flex-direction: column; }
+    .stat-value { font-size: 1.375rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+    .stat-label { font-size: 0.75rem; color: var(--text-tertiary); font-weight: 500; margin-top: 2px; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
     }
 
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .badge {
-      background: var(--primary); color: white; font-size: 0.75rem;
-      padding: 2px 10px; border-radius: 12px; font-weight: 600;
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-4);
     }
 
-    .task-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 0; border-bottom: 1px solid var(--border-color);
+    .card-title {
+      font-size: 0.875rem; font-weight: 600; color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+    .card-header .card-title { margin-bottom: 0; }
+
+    .count-pill {
+      background: var(--primary);
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+    }
+
+    .charts-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+    .chart-wrap { display: flex; align-items: center; justify-content: center; }
+
+    .empty-chart {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 200px; color: var(--text-muted);
+      mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.25; margin-bottom: var(--space-2); }
+      span { font-size: 0.8125rem; }
+    }
+
+    .bottom-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+    }
+
+    .task-list, .activity-list { display: flex; flex-direction: column; }
+
+    .task-item {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-secondary);
       min-width: 0;
       &:last-child { border-bottom: none; }
     }
-    .task-priority-dot { width: 8px; min-width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-    .task-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden; }
-    .task-key { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-    .task-title { font-size: 0.875rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .priority-dot { width: 7px; min-width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .task-key { font-size: 0.6875rem; color: var(--text-muted); font-weight: 600; flex-shrink: 0; font-family: monospace; }
+    .task-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8125rem; }
 
-    .activity-row {
-      display: flex; gap: 12px; padding: 10px 0;
-      border-bottom: 1px solid var(--border-color);
+    .activity-item {
+      display: flex; gap: var(--space-3); padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-secondary);
       &:last-child { border-bottom: none; }
     }
-    .activity-icon {
-      width: 32px; min-width: 32px; height: 32px; border-radius: 8px;
+    .activity-dot {
+      width: 30px; min-width: 30px; height: 30px; border-radius: var(--radius);
       background: var(--bg-tertiary);
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden; flex-shrink: 0;
-      mat-icon { font-size: 18px; width: 18px; min-width: 18px; height: 18px; color: var(--text-secondary); }
+      mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--text-tertiary); }
     }
-    .activity-info {
-      flex: 1; min-width: 0; overflow: hidden;
-      p { font-size: 0.85rem; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    }
+    .activity-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .activity-text { font-size: 0.8125rem; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .activity-time { font-size: 0.6875rem; color: var(--text-muted); }
 
-    .empty-state {
-      text-align: center; padding: 32px 0; color: var(--text-muted);
-      mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.3; margin-bottom: 8px; overflow: hidden; }
+    .empty-inline {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-10) 0; color: var(--text-muted);
+      mat-icon { font-size: 36px; width: 36px; height: 36px; opacity: 0.2; margin-bottom: var(--space-2); }
+      span { font-size: 0.8125rem; }
     }
 
     @media (max-width: 1024px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-grid, .bottom-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .charts-row, .bottom-row { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
     }
   `]
 })
@@ -224,13 +274,17 @@ export class DashboardComponent implements OnInit {
 
   doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
-    plugins: { legend: { position: 'bottom' } }
+    plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } },
+    cutout: '65%'
   };
 
   barOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+      x: { grid: { display: false } }
+    }
   };
 
   constructor(
@@ -251,7 +305,7 @@ export class DashboardComponent implements OnInit {
   }
 
   buildCharts(data: Dashboard): void {
-    const statusColors = ['#3b82f6', '#f59e0b', '#8b5cf6', '#22c55e', '#94a3b8'];
+    const statusColors = ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#94a3b8'];
     const statusLabels = [
       this.translate.instant('common.status.OPEN'),
       this.translate.instant('common.status.IN_PROGRESS'),
@@ -261,12 +315,14 @@ export class DashboardComponent implements OnInit {
     ];
     const statusValues = data.tasksByStatus ? Object.values(data.tasksByStatus) : [];
 
-    this.statusChartData = {
-      labels: statusLabels,
-      datasets: [{ data: statusValues, backgroundColor: statusColors, borderWidth: 0 }]
-    };
+    if (statusValues.some(v => (v as number) > 0)) {
+      this.statusChartData = {
+        labels: statusLabels,
+        datasets: [{ data: statusValues, backgroundColor: statusColors, borderWidth: 0, hoverOffset: 4 }]
+      };
+    }
 
-    const priorityColors = ['#dc2626', '#f97316', '#eab308', '#22c55e', '#94a3b8'];
+    const priorityColors = ['#dc2626', '#f97316', '#eab308', '#10b981', '#94a3b8'];
     const priorityLabels = [
       this.translate.instant('common.priority.CRITICAL'),
       this.translate.instant('common.priority.HIGH'),
@@ -276,17 +332,19 @@ export class DashboardComponent implements OnInit {
     ];
     const priorityValues = data.tasksByPriority ? Object.values(data.tasksByPriority) : [];
 
-    this.priorityChartData = {
-      labels: priorityLabels,
-      datasets: [{ data: priorityValues, backgroundColor: priorityColors, borderRadius: 8, borderWidth: 0 }]
-    };
+    if (priorityValues.some(v => (v as number) > 0)) {
+      this.priorityChartData = {
+        labels: priorityLabels,
+        datasets: [{ data: priorityValues, backgroundColor: priorityColors, borderRadius: 6, borderWidth: 0 }]
+      };
+    }
   }
 
   getActivityIcon(action: string): string {
     const icons: Record<string, string> = {
-      CREATE: 'add_circle', UPDATE: 'edit', DELETE: 'delete', MOVE: 'swap_horiz', ADD_MEMBER: 'person_add'
+      CREATE: 'add_circle_outline', UPDATE: 'edit', DELETE: 'delete_outline', MOVE: 'swap_horiz', ADD_MEMBER: 'person_add'
     };
-    return icons[action] || 'info';
+    return icons[action] || 'info_outline';
   }
 
   formatTime(dateStr: string): string {

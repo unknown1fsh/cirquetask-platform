@@ -1,6 +1,7 @@
 {
   "errors": {
     "forbidden": "Bu işlem için yetkiniz yok.",
+    "planLimit": "Plan limitine ulaştınız. Yükseltmek için Fiyatlandırma sayfasına yönlendiriliyorsunuz.",
     "notFound": "Kaynak bulunamadı.",
     "tooManyRequests": "Çok fazla istek. Lütfen daha sonra tekrar deneyin.",
     "serverError": "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
@@ -108,6 +109,7 @@
   "nav": {
     "dashboard": "Kontrol Paneli",
     "projects": "Projeler",
+    "pricing": "Fiyatlandırma",
     "notifications": "Bildirimler",
     "settings": "Ayarlar",
     "myProjects": "PROJELERİM",
@@ -250,6 +252,14 @@
     "title": "Ayarlar",
     "subtitle": "Profilinizi ve tercihlerinizi yönetin",
     "profile": "Profil",
+    "subscription": "Abonelik",
+    "currentPlan": "Mevcut plan",
+    "usage": "Kullanım",
+    "projectsUsed": "{{current}} / {{max}} proje",
+    "membersPerProject": "Proje başı en fazla {{max}} üye",
+    "upgrade": "Yükselt",
+    "manageBilling": "Aboneliği yönet",
+    "subscriptionSectionDesc": "Planınızı ve kullanımınızı görüntüleyin.",
     "appearance": "Görünüm",
     "firstName": "Ad",
     "lastName": "Soyad",
@@ -263,5 +273,24 @@
     "languageDesc": "Arayüz dilini seçin",
     "langTr": "Türkçe",
     "langEn": "English"
+  },
+  "pricing": {
+    "title": "Fiyatlandırma",
+    "subtitle": "İhtiyacınıza uygun planı seçin",
+    "free": "Ücretsiz",
+    "pro": "Pro",
+    "business": "Business",
+    "perMonth": "/ay",
+    "perYear": "/yıl",
+    "freeDesc": "Küçük ekipler için",
+    "proDesc": "Büyüyen ekipler için",
+    "businessDesc": "Kurumsal kullanım",
+    "freeFeatures": "2 proje, proje başı 5 üye, temel özellikler",
+    "proFeatures": "10 proje, 15 üye/proje, Gantt, raporlar, özel alanlar, zaman takibi",
+    "businessFeatures": "Sınırsız proje ve üye, tüm özellikler, API",
+    "getStarted": "Ücretsiz Başla",
+    "upgradeToPro": "Pro'ya Geç",
+    "upgradeToBusiness": "Business'a Geç",
+    "currentPlan": "Mevcut plan"
   }
 }

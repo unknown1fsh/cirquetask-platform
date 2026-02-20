@@ -17,6 +17,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.owner.id = :ownerId AND p.isArchived = false ORDER BY p.updatedAt DESC")
     List<Project> findByOwnerId(@Param("ownerId") Long ownerId);
 
+    long countByOwnerIdAndIsArchivedFalse(Long ownerId);
+
     @Query("SELECT COUNT(t) FROM Task t WHERE t.project.id = :projectId")
     Long countTasksByProjectId(@Param("projectId") Long projectId);
 }

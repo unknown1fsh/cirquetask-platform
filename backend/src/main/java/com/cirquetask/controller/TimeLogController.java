@@ -4,6 +4,8 @@ import com.cirquetask.model.dto.ApiResponse;
 import com.cirquetask.model.dto.TimeLogDto;
 import com.cirquetask.model.dto.TimeLogRequest;
 import com.cirquetask.security.SecurityUtils;
+import com.cirquetask.model.enums.Feature;
+import com.cirquetask.service.PlanLimitService;
 import com.cirquetask.service.TimeLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,10 +27,12 @@ import java.util.Map;
 public class TimeLogController {
 
     private final TimeLogService timeLogService;
+    private final PlanLimitService planLimitService;
 
     @PostMapping("/time-logs")
     @Operation(summary = "Log time for a task")
     public ResponseEntity<ApiResponse<TimeLogDto>> logTime(@Valid @RequestBody TimeLogRequest request) {
+        planLimitService.requireTaskProjectFeature(request.getTaskId(), Feature.TIME_LOG);
         Long userId = SecurityUtils.getCurrentUserId();
         TimeLogDto timeLog = timeLogService.logTime(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -38,6 +42,7 @@ public class TimeLogController {
     @GetMapping("/time-logs/{timeLogId}")
     @Operation(summary = "Get time log by ID")
     public ResponseEntity<ApiResponse<TimeLogDto>> getTimeLog(@PathVariable Long timeLogId) {
+        planLimitService.requireTimeLogProjectFeature(timeLogId, Feature.TIME_LOG);
         TimeLogDto timeLog = timeLogService.getTimeLogById(timeLogId);
         return ResponseEntity.ok(ApiResponse.success(timeLog));
     }
@@ -45,6 +50,7 @@ public class TimeLogController {
     @GetMapping("/tasks/{taskId}/time-logs")
     @Operation(summary = "Get time logs for a task")
     public ResponseEntity<ApiResponse<List<TimeLogDto>>> getTaskTimeLogs(@PathVariable Long taskId) {
+        planLimitService.requireTaskProjectFeature(taskId, Feature.TIME_LOG);
         List<TimeLogDto> timeLogs = timeLogService.getTimeLogsByTask(taskId);
         return ResponseEntity.ok(ApiResponse.success(timeLogs));
     }
@@ -52,6 +58,7 @@ public class TimeLogController {
     @GetMapping("/tasks/{taskId}/time-logs/total")
     @Operation(summary = "Get total logged time for a task")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getTaskTotalTime(@PathVariable Long taskId) {
+        planLimitService.requireTaskProjectFeature(taskId, Feature.TIME_LOG);
         Integer totalMinutes = timeLogService.getTotalMinutesByTask(taskId);
         Map<String, Object> result = Map.of(
                 "totalMinutes", totalMinutes,
@@ -66,6 +73,7 @@ public class TimeLogController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         Long userId = SecurityUtils.getCurrentUserId();
+        planLimitService.requireUserFeature(userId, Feature.TIME_LOG);
         List<TimeLogDto> timeLogs;
 
         if (startDate != null && endDate != null) {
@@ -83,6 +91,7 @@ public class TimeLogController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         Long userId = SecurityUtils.getCurrentUserId();
+        planLimitService.requireUserFeature(userId, Feature.TIME_LOG);
         Integer totalMinutes = timeLogService.getTotalMinutesByUserAndDateRange(userId, startDate, endDate);
         Map<String, Object> result = Map.of(
                 "totalMinutes", totalMinutes,
@@ -97,6 +106,7 @@ public class TimeLogController {
             @PathVariable Long projectId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        planLimitService.requireProjectFeature(projectId, Feature.TIME_LOG);
         List<TimeLogDto> timeLogs;
 
         if (startDate != null && endDate != null) {
@@ -113,6 +123,7 @@ public class TimeLogController {
     public ResponseEntity<ApiResponse<TimeLogDto>> updateTimeLog(
             @PathVariable Long timeLogId,
             @Valid @RequestBody TimeLogRequest request) {
+        planLimitService.requireTimeLogProjectFeature(timeLogId, Feature.TIME_LOG);
         Long userId = SecurityUtils.getCurrentUserId();
         TimeLogDto timeLog = timeLogService.updateTimeLog(timeLogId, request, userId);
         return ResponseEntity.ok(ApiResponse.success("Time log updated", timeLog));
@@ -121,6 +132,7 @@ public class TimeLogController {
     @DeleteMapping("/time-logs/{timeLogId}")
     @Operation(summary = "Delete a time log")
     public ResponseEntity<ApiResponse<Void>> deleteTimeLog(@PathVariable Long timeLogId) {
+        planLimitService.requireTimeLogProjectFeature(timeLogId, Feature.TIME_LOG);
         Long userId = SecurityUtils.getCurrentUserId();
         timeLogService.deleteTimeLog(timeLogId, userId);
         return ResponseEntity.ok(ApiResponse.success("Time log deleted", null));

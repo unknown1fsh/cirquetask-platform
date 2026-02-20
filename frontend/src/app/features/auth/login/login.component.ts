@@ -21,41 +21,43 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
     MatProgressSpinnerModule, MatSnackBarModule, TranslateModule
   ],
   template: `
-    <div class="auth-container">
-      <div class="auth-left">
-        <div class="brand">
-          <div class="logo">
-            <mat-icon class="logo-icon">bolt</mat-icon>
+    <div class="auth-page">
+      <div class="auth-hero">
+        <div class="hero-content">
+          <div class="hero-brand">
+            <div class="logo-mark"><mat-icon>bolt</mat-icon></div>
+            <h1>CirqueTask</h1>
+            <p>{{ 'auth.login.brandSubtitle' | translate }}</p>
           </div>
-          <h1>CirqueTask</h1>
-          <p>{{ 'auth.login.brandSubtitle' | translate }}</p>
-        </div>
-        <div class="features">
-          <div class="feature-item">
-            <mat-icon>dashboard</mat-icon>
-            <span>{{ 'auth.login.feature1' | translate }}</span>
-          </div>
-          <div class="feature-item">
-            <mat-icon>sync</mat-icon>
-            <span>{{ 'auth.login.feature2' | translate }}</span>
-          </div>
-          <div class="feature-item">
-            <mat-icon>analytics</mat-icon>
-            <span>{{ 'auth.login.feature3' | translate }}</span>
+          <div class="hero-features">
+            <div class="feature">
+              <div class="feature-icon"><mat-icon>space_dashboard</mat-icon></div>
+              <span>{{ 'auth.login.feature1' | translate }}</span>
+            </div>
+            <div class="feature">
+              <div class="feature-icon"><mat-icon>sync</mat-icon></div>
+              <span>{{ 'auth.login.feature2' | translate }}</span>
+            </div>
+            <div class="feature">
+              <div class="feature-icon"><mat-icon>analytics</mat-icon></div>
+              <span>{{ 'auth.login.feature3' | translate }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="auth-right">
-        <div class="auth-form-wrapper">
-          <h2>{{ 'auth.login.title' | translate }}</h2>
-          <p class="subtitle">{{ 'auth.login.subtitle' | translate }}</p>
+      <div class="auth-form-side">
+        <div class="form-container">
+          <div class="form-header">
+            <h2>{{ 'auth.login.title' | translate }}</h2>
+            <p>{{ 'auth.login.subtitle' | translate }}</p>
+          </div>
 
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>{{ 'auth.login.email' | translate }}</mat-label>
               <input matInput formControlName="email" type="email" [placeholder]="'auth.login.emailPlaceholder' | translate">
-              <mat-icon matPrefix>email</mat-icon>
+              <mat-icon matPrefix>mail_outline</mat-icon>
               @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
                 <mat-error>{{ 'auth.login.emailRequired' | translate }}</mat-error>
               }
@@ -70,7 +72,7 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>{{ 'auth.login.password' | translate }}</mat-label>
               <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'">
-              <mat-icon matPrefix>lock</mat-icon>
+              <mat-icon matPrefix>lock_outline</mat-icon>
               <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
                 <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
@@ -82,9 +84,9 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
               }
             </mat-form-field>
 
-            <p class="forgot-link">
-              <a routerLink="/auth/forgot-password">{{ 'auth.login.forgotPassword.link' | translate }}</a>
-            </p>
+            <div class="forgot-row">
+              <a routerLink="/auth/forgot-password" class="forgot-link">{{ 'auth.login.forgotPassword.link' | translate }}</a>
+            </div>
 
             <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="loading()">
               @if (loading()) {
@@ -95,82 +97,177 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             </button>
           </form>
 
-          <p class="auth-link">
-            {{ 'auth.login.noAccount' | translate }} <a routerLink="/auth/register">{{ 'auth.login.createOne' | translate }}</a>
-          </p>
+          <div class="auth-footer">
+            {{ 'auth.login.noAccount' | translate }}
+            <a routerLink="/auth/register">{{ 'auth.login.createOne' | translate }}</a>
+          </div>
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .auth-container {
+    .auth-page {
       display: flex;
       min-height: 100vh;
     }
-    .auth-left {
+
+    .auth-hero {
       flex: 1;
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+      background: linear-gradient(160deg, #312e81 0%, #4338ca 40%, #6366f1 100%);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 48px;
+      justify-content: center;
+      padding: var(--space-12);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 70%, rgba(129,140,248,0.2) 0%, transparent 60%);
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      max-width: 400px;
+    }
+
+    .hero-brand {
+      margin-bottom: var(--space-12);
+    }
+
+    .logo-mark {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-5);
+      mat-icon { font-size: 28px; width: 28px; height: 28px; color: white; }
+    }
+
+    .hero-brand h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-2);
       color: white;
     }
-    .brand { text-align: center; margin-bottom: 48px; }
-    .logo {
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 20px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      backdrop-filter: blur(10px);
+
+    .hero-brand p {
+      font-size: 1rem;
+      opacity: 0.75;
+      line-height: 1.5;
     }
-    .logo-icon { font-size: 40px; width: 40px; height: 40px; overflow: hidden; }
-    .brand h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; }
-    .brand p { opacity: 0.8; margin-top: 8px; font-size: 1.1rem; }
-    .features { display: flex; flex-direction: column; gap: 16px; }
-    .feature-item {
-      display: flex; align-items: center; gap: 12px;
-      background: rgba(255,255,255,0.1);
-      padding: 12px 24px; border-radius: 12px;
-      backdrop-filter: blur(10px);
+
+    .hero-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      font-size: 0.875rem;
       font-weight: 500;
-      mat-icon { width: 24px; min-width: 24px; height: 24px; flex-shrink: 0; }
     }
-    .auth-right {
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    }
+
+    .auth-form-side {
       flex: 1;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
       background: var(--bg-primary);
-      padding: 48px;
     }
-    .auth-form-wrapper {
-      width: 100%; max-width: 420px;
+
+    .form-container {
+      width: 100%;
+      max-width: 400px;
     }
-    .auth-form-wrapper h2 {
-      font-size: 1.75rem; font-weight: 700;
-      color: var(--text-primary); margin-bottom: 8px;
+
+    .form-header {
+      margin-bottom: var(--space-8);
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: var(--space-2);
+      }
+      p {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+      }
     }
-    .subtitle {
-      color: var(--text-secondary); margin-bottom: 32px;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
     }
-    form { display: flex; flex-direction: column; gap: 4px; }
-    .submit-btn {
-      width: 100%; height: 48px; font-size: 1rem;
-      font-weight: 600; border-radius: 12px; margin-top: 8px;
+
+    .forgot-row {
+      text-align: right;
+      margin: -4px 0 var(--space-3);
     }
+
     .forgot-link {
-      text-align: right; margin-top: -8px; margin-bottom: 8px;
-      a { color: var(--primary); font-size: 0.875rem; font-weight: 500; }
+      color: var(--primary);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      &:hover { text-decoration: underline; }
     }
-    .auth-link {
-      text-align: center; margin-top: 24px;
+
+    .submit-btn {
+      width: 100%;
+      height: 44px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: var(--radius) !important;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: var(--space-6);
+      font-size: 0.875rem;
       color: var(--text-secondary);
-      a { color: var(--primary); font-weight: 600; }
+      a {
+        color: var(--primary);
+        font-weight: 600;
+        margin-left: 4px;
+        &:hover { text-decoration: underline; }
+      }
     }
+
     @media (max-width: 768px) {
-      .auth-left { display: none; }
-      .auth-right { padding: 24px; }
+      .auth-hero { display: none; }
+      .auth-form-side { padding: var(--space-6); }
     }
   `]
 })

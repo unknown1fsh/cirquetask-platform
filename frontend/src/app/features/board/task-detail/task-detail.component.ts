@@ -29,15 +29,13 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
   ],
   template: `
     <div class="task-dialog">
-      <div class="dialog-header">
+      <div class="td-header">
         <h2>{{ data.mode === 'create' ? ('taskDetail.createTask' | translate) : data.task?.taskKey }}</h2>
-        <button mat-icon-button (click)="dialogRef.close()">
-          <mat-icon>close</mat-icon>
-        </button>
+        <button class="close-btn" (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
       </div>
 
       <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-        <div class="dialog-body">
+        <div class="td-body">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'taskDetail.title' | translate }}</mat-label>
             <input matInput formControlName="title" [placeholder]="'taskDetail.titlePlaceholder' | translate">
@@ -48,13 +46,13 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'taskDetail.description' | translate }}</mat-label>
-            <textarea matInput formControlName="description" rows="4" [placeholder]="'taskDetail.descriptionPlaceholder' | translate"></textarea>
+            <textarea matInput formControlName="description" rows="3" [placeholder]="'taskDetail.descriptionPlaceholder' | translate"></textarea>
             @if (taskForm.get('description')?.hasError('serverError')) {
               <mat-error>{{ taskForm.get('description')?.getError('serverError') }}</mat-error>
             }
           </mat-form-field>
 
-          <div class="form-row">
+          <div class="field-row">
             <mat-form-field appearance="outline">
               <mat-label>{{ 'taskDetail.type' | translate }}</mat-label>
               <mat-select formControlName="type">
@@ -65,7 +63,6 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
                 <mat-option value="EPIC">{{ 'common.type.EPIC' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>{{ 'taskDetail.priority' | translate }}</mat-label>
               <mat-select formControlName="priority">
@@ -78,12 +75,11 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             </mat-form-field>
           </div>
 
-          <div class="form-row">
+          <div class="field-row">
             <mat-form-field appearance="outline">
               <mat-label>{{ 'taskDetail.storyPoints' | translate }}</mat-label>
               <input matInput type="number" formControlName="storyPoints" min="0">
             </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>{{ 'taskDetail.dueDate' | translate }}</mat-label>
               <input matInput [matDatepicker]="picker" formControlName="dueDate">
@@ -92,38 +88,28 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
             </mat-form-field>
           </div>
 
-          <!-- Subtasks section for edit mode -->
           @if (data.mode === 'edit' && data.task) {
-            <mat-divider></mat-divider>
-            <div class="subtasks-section">
-              <h3>{{ 'taskDetail.subtasks' | translate }}</h3>
+            <div class="td-section">
+              <h4>{{ 'taskDetail.subtasks' | translate }}</h4>
               @for (st of taskSubtasks(); track st.id) {
-                <div class="subtask-row">
-                  <mat-icon class="subtask-icon">{{ st.status === 'DONE' ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-                  <span class="subtask-title">{{ st.title }}</span>
+                <div class="subtask-item">
+                  <mat-icon [class.done]="st.status === 'DONE'">{{ st.status === 'DONE' ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                  <span>{{ st.title }}</span>
                 </div>
               }
-              @if (taskSubtasks().length === 0) {
-                <p class="text-muted">{{ 'taskDetail.noSubtasks' | translate }}</p>
-              }
-              <button mat-stroked-button type="button" (click)="openAddSubtask()">
+              @if (taskSubtasks().length === 0) { <p class="section-empty">{{ 'taskDetail.noSubtasks' | translate }}</p> }
+              <button mat-stroked-button type="button" (click)="openAddSubtask()" class="section-action">
                 <mat-icon>add</mat-icon> {{ 'taskDetail.addSubtask' | translate }}
               </button>
             </div>
-          }
 
-          <!-- Labels section for edit mode -->
-          @if (data.mode === 'edit' && data.task) {
-            <mat-divider></mat-divider>
-            <div class="labels-section">
-              <h3>{{ 'taskDetail.labels' | translate }}</h3>
-              <div class="label-chips">
+            <div class="td-section">
+              <h4>{{ 'taskDetail.labels' | translate }}</h4>
+              <div class="label-list">
                 @for (label of taskLabels(); track label.id) {
-                  <span class="label-chip" [style.background-color]="label.color || '#6366f1'" [style.color]="'#fff'">
+                  <span class="label-tag" [style.background]="label.color || '#6366f1'">
                     {{ label.name }}
-                    <button type="button" mat-icon-button class="chip-remove" (click)="removeLabel(label)" [attr.aria-label]="'common.delete' | translate">
-                      <mat-icon>cancel</mat-icon>
-                    </button>
+                    <button type="button" class="label-remove" (click)="removeLabel(label)"><mat-icon>close</mat-icon></button>
                   </span>
                 }
               </div>
@@ -139,53 +125,46 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
                 </mat-form-field>
               }
             </div>
-          }
 
-          <!-- Comments section for edit mode -->
-          @if (data.mode === 'edit') {
-            <mat-divider></mat-divider>
-            <div class="comments-section">
-              <h3>{{ 'taskDetail.comments' | translate }}</h3>
+            <div class="td-section">
+              <h4>{{ 'taskDetail.comments' | translate }}</h4>
               @for (comment of comments(); track comment.id) {
-                <div class="comment">
-                  <div class="comment-header">
+                <div class="comment-item">
+                  <div class="comment-top">
                     <strong>{{ comment.author.firstName }} {{ comment.author.lastName }}</strong>
-                    <small class="text-muted">{{ formatTime(comment.createdAt) }}</small>
+                    <span class="comment-time">{{ formatTime(comment.createdAt) }}</span>
                   </div>
                   <p>{{ comment.content }}</p>
                 </div>
               }
-              <div class="add-comment">
+              <div class="comment-input">
                 <mat-form-field appearance="outline" class="w-full">
                   <input matInput [placeholder]="'taskDetail.addComment' | translate" #commentInput
                          (keydown.enter)="addComment(commentInput.value); commentInput.value = ''">
-                  <mat-icon matSuffix class="send-icon" (click)="addComment(commentInput.value); commentInput.value = ''">send</mat-icon>
+                  <mat-icon matSuffix class="send-btn" (click)="addComment(commentInput.value); commentInput.value = ''">send</mat-icon>
                 </mat-form-field>
               </div>
             </div>
 
-            <mat-divider></mat-divider>
-            <div class="attachments-section">
-              <h3>{{ 'taskDetail.attachments' | translate }}</h3>
+            <div class="td-section">
+              <h4>{{ 'taskDetail.attachments' | translate }}</h4>
               @if (attachmentsLoading()) {
-                <p class="text-muted">{{ 'common.loading' | translate }}</p>
+                <p class="section-empty">{{ 'common.loading' | translate }}</p>
               } @else {
                 @for (att of attachments(); track att.id) {
-                  <div class="attachment-row">
-                    <a (click)="downloadAttachment(att)" class="attachment-link">{{ att.fileName }}</a>
-                    <span class="attachment-size">{{ formatFileSize(att.fileSize) }}</span>
-                    <button mat-icon-button type="button" color="warn" (click)="removeAttachment(att)" [attr.aria-label]="'common.delete' | translate">
-                      <mat-icon>delete</mat-icon>
+                  <div class="attachment-item">
+                    <a (click)="downloadAttachment(att)" class="att-name">{{ att.fileName }}</a>
+                    <span class="att-size">{{ formatFileSize(att.fileSize) }}</span>
+                    <button mat-icon-button type="button" (click)="removeAttachment(att)" class="att-delete">
+                      <mat-icon>delete_outline</mat-icon>
                     </button>
                   </div>
                 }
-                @if (attachments().length === 0) {
-                  <p class="text-muted">{{ 'taskDetail.noAttachments' | translate }}</p>
-                }
+                @if (attachments().length === 0) { <p class="section-empty">{{ 'taskDetail.noAttachments' | translate }}</p> }
               }
-              <div class="upload-row">
+              <div class="upload-area">
                 <input #fileInput type="file" hidden (change)="onFileSelected($event)" multiple>
-                <button mat-stroked-button type="button" (click)="fileInput.click()">
+                <button mat-stroked-button type="button" (click)="fileInput.click()" class="section-action">
                   <mat-icon>upload_file</mat-icon> {{ 'taskDetail.uploadAttachment' | translate }}
                 </button>
               </div>
@@ -193,13 +172,13 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
           }
         </div>
 
-        <div class="dialog-footer">
+        <div class="td-footer">
           @if (data.mode === 'edit') {
             <button mat-button type="button" color="warn" (click)="deleteTask()">
-              <mat-icon>delete</mat-icon> {{ 'common.delete' | translate }}
+              <mat-icon>delete_outline</mat-icon> {{ 'common.delete' | translate }}
             </button>
           }
-          <span class="spacer"></span>
+          <span class="footer-spacer"></span>
           <button mat-button type="button" (click)="dialogRef.close()">{{ 'common.cancel' | translate }}</button>
           <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
             {{ data.mode === 'create' ? ('common.create' | translate) : ('common.save' | translate) }}
@@ -210,43 +189,83 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
   `,
   styles: [`
     .task-dialog { width: 100%; }
-    .dialog-header {
+
+    .td-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px; border-bottom: 1px solid var(--border-color);
-      h2 { font-size: 1.1rem; font-weight: 700; }
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--border-primary);
+      h2 { font-size: 1rem; font-weight: 700; }
     }
-    .dialog-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
-    .form-row { display: flex; gap: 12px; mat-form-field { flex: 1; } }
-    .dialog-footer {
-      display: flex; align-items: center; gap: 8px;
-      padding: 16px 24px; border-top: 1px solid var(--border-color);
+    .close-btn {
+      width: 32px; height: 32px; border-radius: var(--radius);
+      border: none; background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-tertiary);
+      &:hover { background: var(--hover-bg); }
+      mat-icon { font-size: 20px; width: 20px; height: 20px; }
     }
-    .spacer { flex: 1; }
-    .comments-section { margin-top: 16px; h3 { font-weight: 600; margin-bottom: 12px; } }
-    .comment {
-      padding: 10px 0; border-bottom: 1px solid var(--border-color);
-      .comment-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-      p { font-size: 0.9rem; }
+
+    .td-body {
+      padding: var(--space-6); max-height: 65vh; overflow-y: auto;
+      display: flex; flex-direction: column; gap: var(--space-2);
     }
-    .add-comment { margin-top: 12px; }
-    .send-icon { cursor: pointer; color: var(--primary); width: 24px; min-width: 24px; height: 24px; flex-shrink: 0; }
-    .attachments-section { margin-top: 16px; h3 { font-weight: 600; margin-bottom: 12px; } }
-    .attachment-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-    .attachment-link { cursor: pointer; color: var(--primary); text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; }
-    .attachment-size { font-size: 0.85rem; color: var(--text-muted); }
-    .upload-row { margin-top: 8px; }
-    .labels-section { margin-top: 16px; h3 { font-weight: 600; margin-bottom: 12px; } }
-    .label-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-    .label-chip {
+
+    .field-row { display: flex; gap: var(--space-3); mat-form-field { flex: 1; } }
+
+    .td-section {
+      padding-top: var(--space-4); margin-top: var(--space-2);
+      border-top: 1px solid var(--border-secondary);
+      h4 { font-size: 0.8125rem; font-weight: 600; margin-bottom: var(--space-3); }
+    }
+
+    .section-empty { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: var(--space-3); }
+    .section-action { margin-top: var(--space-2); font-size: 0.8125rem !important; }
+
+    .subtask-item {
+      display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--text-muted); &.done { color: var(--success); } }
+      span { font-size: 0.8125rem; }
+    }
+
+    .label-list { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+    .label-tag {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 8px; border-radius: 16px; font-size: 0.875rem;
-      .chip-remove { width: 20px; height: 20px; line-height: 20px; mat-icon { font-size: 16px; width: 16px; height: 16px; } }
+      padding: 3px 10px; border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 500; color: white;
     }
-    .add-label-field { width: 100%; max-width: 240px; }
-    .subtasks-section { margin-top: 16px; h3 { font-weight: 600; margin-bottom: 12px; } }
-    .subtask-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-    .subtask-icon { font-size: 20px; width: 20px; height: 20px; color: var(--text-muted); }
-    .subtask-title { font-size: 0.9rem; }
+    .label-remove {
+      width: 16px; height: 16px; border: none; background: transparent;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.7); padding: 0;
+      &:hover { color: white; }
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    }
+    .add-label-field { width: 100%; max-width: 220px; }
+
+    .comment-item {
+      padding: var(--space-3) 0; border-bottom: 1px solid var(--border-secondary);
+      &:last-of-type { border-bottom: none; }
+    }
+    .comment-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
+    .comment-top strong { font-size: 0.8125rem; }
+    .comment-time { font-size: 0.6875rem; color: var(--text-muted); }
+    .comment-item p { font-size: 0.8125rem; color: var(--text-secondary); }
+    .comment-input { margin-top: var(--space-3); }
+    .send-btn { cursor: pointer; color: var(--primary); }
+
+    .attachment-item {
+      display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;
+    }
+    .att-name { cursor: pointer; color: var(--primary); font-size: 0.8125rem; flex: 1; overflow: hidden; text-overflow: ellipsis; &:hover { text-decoration: underline; } }
+    .att-size { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+    .att-delete { width: 28px !important; height: 28px !important; mat-icon { font-size: 18px; } }
+
+    .td-footer {
+      display: flex; align-items: center; gap: var(--space-2);
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--border-primary);
+    }
+    .footer-spacer { flex: 1; }
   `]
 })
 export class TaskDetailComponent implements OnInit {
@@ -299,16 +318,9 @@ export class TaskDetailComponent implements OnInit {
     if (!this.data.task) return;
     const dialogRef = this.dialog.open(TaskDetailComponent, {
       width: '600px',
-      data: {
-        projectId: this.data.projectId,
-        columnId: this.data.task.columnId ?? undefined,
-        parentTaskId: this.data.task.id,
-        mode: 'create'
-      }
+      data: { projectId: this.data.projectId, columnId: this.data.task.columnId ?? undefined, parentTaskId: this.data.task.id, mode: 'create' }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.loadSubtasks();
-    });
+    dialogRef.afterClosed().subscribe(result => { if (result) this.loadSubtasks(); });
   }
 
   get availableLabelsToAdd(): Label[] {
@@ -326,7 +338,6 @@ export class TaskDetailComponent implements OnInit {
 
   onSubmit(): void {
     if (this.taskForm.invalid) return;
-
     const formValue = this.taskForm.value;
     const request: TaskRequest = {
       title: formValue.title,
@@ -344,9 +355,7 @@ export class TaskDetailComponent implements OnInit {
         next: () => this.dialogRef.close(true),
         error: (err) => {
           const data = err.error?.data;
-          if (data && typeof data === 'object' && !Array.isArray(data)) {
-            applyServerValidationErrors(this.taskForm, data as Record<string, string>);
-          }
+          if (data && typeof data === 'object' && !Array.isArray(data)) applyServerValidationErrors(this.taskForm, data as Record<string, string>);
         }
       });
     } else if (this.data.task) {
@@ -354,9 +363,7 @@ export class TaskDetailComponent implements OnInit {
         next: () => this.dialogRef.close(true),
         error: (err) => {
           const data = err.error?.data;
-          if (data && typeof data === 'object' && !Array.isArray(data)) {
-            applyServerValidationErrors(this.taskForm, data as Record<string, string>);
-          }
+          if (data && typeof data === 'object' && !Array.isArray(data)) applyServerValidationErrors(this.taskForm, data as Record<string, string>);
         }
       });
     }
@@ -364,16 +371,12 @@ export class TaskDetailComponent implements OnInit {
 
   addComment(content: string): void {
     if (!content.trim() || !this.data.task) return;
-    this.taskService.addComment(this.data.task.id, { content }).subscribe({
-      next: () => this.loadComments()
-    });
+    this.taskService.addComment(this.data.task.id, { content }).subscribe({ next: () => this.loadComments() });
   }
 
   deleteTask(): void {
     if (this.data.task && confirm(this.translate.instant('taskDetail.deleteConfirm'))) {
-      this.taskService.deleteTask(this.data.task.id).subscribe({
-        next: () => this.dialogRef.close(true)
-      });
+      this.taskService.deleteTask(this.data.task.id).subscribe({ next: () => this.dialogRef.close(true) });
     }
   }
 
@@ -410,10 +413,7 @@ export class TaskDetailComponent implements OnInit {
     if (!this.data.task) return;
     this.attachmentsLoading.set(true);
     this.attachmentService.listByTask(this.data.task.id).subscribe({
-      next: (res) => {
-        if (res.success) this.attachments.set(res.data);
-        this.attachmentsLoading.set(false);
-      },
+      next: (res) => { if (res.success) this.attachments.set(res.data); this.attachmentsLoading.set(false); },
       error: () => this.attachmentsLoading.set(false)
     });
   }
@@ -423,31 +423,20 @@ export class TaskDetailComponent implements OnInit {
     const files = input.files;
     if (!files?.length || !this.data.task) return;
     for (let i = 0; i < files.length; i++) {
-      this.attachmentService.upload(this.data.task.id, files[i]).subscribe({
-        next: () => this.loadAttachments()
-      });
+      this.attachmentService.upload(this.data.task.id, files[i]).subscribe({ next: () => this.loadAttachments() });
     }
     input.value = '';
   }
 
   downloadAttachment(att: Attachment): void {
     this.attachmentService.download(att.id).subscribe({
-      next: (blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = att.fileName;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      next: (blob) => { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = att.fileName; a.click(); URL.revokeObjectURL(url); }
     });
   }
 
   removeAttachment(att: Attachment): void {
     if (!confirm(this.translate.instant('taskDetail.deleteAttachmentConfirm'))) return;
-    this.attachmentService.delete(att.id).subscribe({
-      next: () => this.loadAttachments()
-    });
+    this.attachmentService.delete(att.id).subscribe({ next: () => this.loadAttachments() });
   }
 
   formatFileSize(bytes: number): string {

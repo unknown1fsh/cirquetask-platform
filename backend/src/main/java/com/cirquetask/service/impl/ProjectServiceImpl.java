@@ -11,6 +11,7 @@ import com.cirquetask.model.enums.ProjectRole;
 import com.cirquetask.model.mapper.ProjectMapper;
 import com.cirquetask.repository.*;
 import com.cirquetask.service.ActivityLogService;
+import com.cirquetask.service.PlanLimitService;
 import com.cirquetask.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final BoardColumnRepository columnRepository;
     private final ProjectMapper projectMapper;
     private final ActivityLogService activityLogService;
+    private final PlanLimitService planLimitService;
 
     @Override
     @Transactional
     public ProjectDto createProject(ProjectRequest request, Long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        planLimitService.requireCanCreateProject(owner);
 
         Project project = Project.builder()
                 .name(request.getName())
@@ -165,6 +169,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
         User user = userRepository.findById(memberUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", memberUserId));
+
+        planLimitService.requireCanAddMember(project);
 
         ProjectMember member = ProjectMember.builder()
                 .project(project)

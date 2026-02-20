@@ -220,6 +220,21 @@ export interface ActivityLog {
   createdAt: string;
 }
 
+// Billing / Plan
+export type Plan = 'FREE' | 'PRO' | 'BUSINESS';
+export type Feature = 'GANTT' | 'REPORTS' | 'CUSTOM_FIELDS' | 'TIME_LOG' | 'API_ACCESS';
+
+export interface PlanDto {
+  plan: Plan;
+  subscriptionStatus?: string;
+  currentPeriodEnd?: string;
+  maxProjects: number;
+  maxMembersPerProject: number;
+  currentProjectCount: number;
+  currentMembersInProject: number;
+  enabledFeatures: Feature[];
+}
+
 // Dashboard
 export interface Dashboard {
   totalProjects: number;

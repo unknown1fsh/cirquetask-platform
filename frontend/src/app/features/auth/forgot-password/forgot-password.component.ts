@@ -15,78 +15,132 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
   selector: 'app-forgot-password',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    TranslateModule
+    CommonModule, ReactiveFormsModule, RouterLink,
+    MatInputModule, MatButtonModule, MatIconModule,
+    MatProgressSpinnerModule, MatSnackBarModule, TranslateModule
   ],
   template: `
-    <div class="auth-container">
-      <div class="auth-right single">
-        <div class="auth-form-wrapper">
+    <div class="auth-page-centered">
+      <div class="auth-card">
+        <div class="card-brand">
+          <div class="logo-mark"><mat-icon>bolt</mat-icon></div>
+          <span>CirqueTask</span>
+        </div>
+
+        <div class="form-header">
           <h2>{{ 'auth.forgotPassword.title' | translate }}</h2>
-          <p class="subtitle">{{ 'auth.forgotPassword.subtitle' | translate }}</p>
+          <p>{{ 'auth.forgotPassword.subtitle' | translate }}</p>
+        </div>
 
-          @if (!sent()) {
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>{{ 'auth.login.email' | translate }}</mat-label>
-                <input matInput formControlName="email" type="email" [placeholder]="'auth.login.emailPlaceholder' | translate">
-                <mat-icon matPrefix>email</mat-icon>
-                @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
-                  <mat-error>{{ 'auth.login.emailRequired' | translate }}</mat-error>
-                }
-                @if (form.get('email')?.hasError('email')) {
-                  <mat-error>{{ 'auth.login.emailInvalid' | translate }}</mat-error>
-                }
-                @if (form.get('email')?.hasError('serverError')) {
-                  <mat-error>{{ form.get('email')?.getError('serverError') }}</mat-error>
-                }
-              </mat-form-field>
+        @if (!sent()) {
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'auth.login.email' | translate }}</mat-label>
+              <input matInput formControlName="email" type="email" [placeholder]="'auth.login.emailPlaceholder' | translate">
+              <mat-icon matPrefix>mail_outline</mat-icon>
+              @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+                <mat-error>{{ 'auth.login.emailRequired' | translate }}</mat-error>
+              }
+              @if (form.get('email')?.hasError('email')) {
+                <mat-error>{{ 'auth.login.emailInvalid' | translate }}</mat-error>
+              }
+              @if (form.get('email')?.hasError('serverError')) {
+                <mat-error>{{ form.get('email')?.getError('serverError') }}</mat-error>
+              }
+            </mat-form-field>
 
-              <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="loading()">
-                @if (loading()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                } @else {
-                  {{ 'auth.forgotPassword.submit' | translate }}
-                }
-              </button>
-            </form>
-          } @else {
-            <p class="success-msg">{{ 'auth.forgotPassword.success' | translate }}</p>
-          }
+            <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="loading()">
+              @if (loading()) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                {{ 'auth.forgotPassword.submit' | translate }}
+              }
+            </button>
+          </form>
+        } @else {
+          <div class="success-state">
+            <div class="success-icon"><mat-icon>check_circle_outline</mat-icon></div>
+            <p>{{ 'auth.forgotPassword.success' | translate }}</p>
+          </div>
+        }
 
-          <p class="auth-link">
-            <a routerLink="/auth/login">{{ 'auth.forgotPassword.backToLogin' | translate }}</a>
-          </p>
+        <div class="auth-footer">
+          <a routerLink="/auth/login">
+            <mat-icon>arrow_back</mat-icon>
+            {{ 'auth.forgotPassword.backToLogin' | translate }}
+          </a>
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); }
-    .auth-right.single {
-      flex: 1;
-      max-width: 420px;
-      padding: 48px 24px;
-      background: var(--bg-primary);
-      border-radius: 16px;
-      box-shadow: var(--shadow-sm);
+    .auth-page-centered {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-secondary);
+      padding: var(--space-6);
     }
-    .auth-form-wrapper { width: 100%; }
-    .auth-form-wrapper h2 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .subtitle { color: var(--text-secondary); margin-bottom: 24px; }
-    form { display: flex; flex-direction: column; gap: 4px; }
-    .submit-btn { width: 100%; height: 48px; font-size: 1rem; font-weight: 600; border-radius: 12px; margin-top: 8px; }
-    .success-msg { color: var(--text-secondary); margin: 24px 0; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; }
-    .auth-link { text-align: center; margin-top: 24px; a { color: var(--primary); font-weight: 600; } }
-    .w-full { width: 100%; }
-    .mat-icon { width: 24px; min-width: 24px; height: 24px; flex-shrink: 0; overflow: hidden; }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-primary);
+      padding: var(--space-10);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+      span { font-weight: 700; font-size: 1.0625rem; color: var(--text-primary); letter-spacing: -0.02em; }
+    }
+
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: var(--radius);
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      mat-icon { font-size: 20px; width: 20px; height: 20px; color: white; }
+    }
+
+    .form-header {
+      margin-bottom: var(--space-6);
+      h2 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2); }
+      p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.5; }
+    }
+
+    form { display: flex; flex-direction: column; gap: var(--space-1); }
+    .submit-btn { width: 100%; height: 44px; font-size: 0.9375rem; font-weight: 600; border-radius: var(--radius) !important; }
+
+    .success-state {
+      text-align: center;
+      padding: var(--space-6) 0;
+      .success-icon mat-icon {
+        font-size: 48px; width: 48px; height: 48px; color: var(--success);
+        margin-bottom: var(--space-4);
+      }
+      p { color: var(--text-secondary); line-height: 1.5; }
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: var(--space-6);
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        &:hover { color: var(--primary); }
+        mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      }
+    }
   `]
 })
 export class ForgotPasswordComponent {
