@@ -126,6 +126,7 @@ Proje tek servis olarak Railway'da yayınlanabilir (Frontend + Backend tek conta
    - `JWT_SECRET` = güçlü base64 secret (production zorunlu)
 6. **Domain ekle:** Service → Settings → Generate Domain
 7. **Deploy:** GitHub push veya `railway up` ile otomatik deploy
+8. **Port:** Railway trafiği `PORT` ile verir; container içinde Nginx bu portu dinler, backend 5001'de çalışır. Variables'da `PORT` eklemeyin veya 5000 yapmayın (403 hatasına yol açar).
 
 Detaylı env listesi için `.env.example` dosyasına bakın.
 
