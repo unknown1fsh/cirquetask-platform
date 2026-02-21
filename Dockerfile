@@ -16,7 +16,7 @@ RUN mvn package -DskipTests -B
 
 # Stage 3: Final image - Nginx + Java
 FROM eclipse-temurin:17-jre-alpine
-RUN apk add --no-cache nginx
+RUN apk add --no-cache nginx curl
 
 WORKDIR /app
 
