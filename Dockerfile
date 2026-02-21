@@ -20,8 +20,9 @@ RUN apk add --no-cache nginx curl
 
 WORKDIR /app
 
-# Copy frontend static files (icerigi html root'a; builder'a gore browser/ veya dogrudan dist/frontend)
-COPY --from=frontend-build /app/dist/frontend/. /usr/share/nginx/html/
+# Copy frontend static files (application builder: browser/; esbuild: dogrudan dist/frontend)
+COPY --from=frontend-build /app/dist/frontend /tmp/frontend
+RUN if [ -d /tmp/frontend/browser ]; then cp -r /tmp/frontend/browser/. /usr/share/nginx/html/; else cp -r /tmp/frontend/. /usr/share/nginx/html/; fi && rm -rf /tmp/frontend
 
 # Nginx config template (PORT substituted at runtime for Railway)
 COPY frontend/nginx.standalone.full.conf.template /etc/nginx/nginx.conf.template
