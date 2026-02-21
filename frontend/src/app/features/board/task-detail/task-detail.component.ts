@@ -17,6 +17,8 @@ import { AttachmentService } from '../../../core/services/attachment.service';
 import { LabelService } from '../../../core/services/label.service';
 import { Task, Comment, Attachment, Label, TaskRequest } from '../../../core/models';
 import { applyServerValidationErrors } from '../../../core/utils/form.util';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-task-detail',
@@ -25,7 +27,7 @@ import { applyServerValidationErrors } from '../../../core/utils/form.util';
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatDatepickerModule,
-    MatNativeDateModule, MatChipsModule, MatDividerModule, TranslateModule
+    MatNativeDateModule, MatChipsModule, MatDividerModule, TranslateModule, MatSnackBarModule
   ],
   template: `
     <div class="task-dialog">
