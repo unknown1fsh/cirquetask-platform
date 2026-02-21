@@ -28,7 +28,7 @@ COPY frontend/nginx.standalone.full.conf.template /etc/nginx/nginx.conf.template
 
 # Entrypoint: substitute PORT, start Java on 5000, nginx on $PORT
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 # Copy backend JAR (single executable JAR; * would match -plain.jar too and break COPY)
 COPY --from=backend-build /app/target/cirquetask-backend-1.0.0.jar app.jar
