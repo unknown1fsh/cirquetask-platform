@@ -77,7 +77,8 @@ stripe:
   price-id-business-yearly: ${STRIPE_PRICE_BUSINESS_YEARLY:price_business_yearly}
   portal-return-url: ${STRIPE_PORTAL_RETURN_URL:${APP_URL:http://localhost:4200}/settings}
 
-# CORS Configuration
+# CORS Configuration (403 on register/login = frontend origin izinli degil)
+# Railway: APP_URL veya APP_CORS_ORIGINS ile frontend URL verin (ornek: https://cirquetask-platform-production.up.railway.app)
 app.cors:
   allowed-origins: ${APP_CORS_ORIGINS:${APP_URL:http://localhost:4200}}
   allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
