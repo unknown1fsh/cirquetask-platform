@@ -7,18 +7,5 @@ sed "s/__PORT__/${PORT}/g" /etc/nginx/nginx.conf.template > "$NGINX_CONF"
 # Start Java on 5001 (backend; 5000 Railway tarafindan PORT olarak atanabilir)
 export SERVER_PORT=5001
 java -jar /app/app.jar &
-# Wait for backend to be ready so frontend is not served before API is up
-wait_for_backend() {
-  i=0
-  while [ $i -lt 60 ]; do
-    if curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:5001/actuator/health" | grep -q 200; then
-      return 0
-    fi
-    i=$((i + 1))
-    sleep 1
-  done
-  return 1
-}
-wait_for_backend || true
-# Then start nginx on $PORT (frontend + proxy to backend at 5001)
+# Nginx'i hemen baslat; Railway health check zaman asimina dusmesin. Backend birkaç saniye icinde ayaga kalkar.
 exec nginx -g "daemon off;"
