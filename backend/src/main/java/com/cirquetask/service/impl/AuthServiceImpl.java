@@ -45,11 +45,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email is already registered");
-        }
+        log.info("Register attempt: email={}", request != null && request.getEmail() != null ? request.getEmail() : "null");
+        try {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                log.warn("Register failed: email already registered");
+                throw new BadRequestException("Email is already registered");
+            }
 
-        User user = User.builder()
+            User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
@@ -57,13 +60,19 @@ public class AuthServiceImpl implements AuthService {
                 .isActive(true)
                 .build();
 
-        user = userRepository.save(user);
-        log.info("New user registered: {}", user.getEmail());
+            user = userRepository.save(user);
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
 
-        return AuthResponse.of(accessToken, refreshToken, jwtTokenProvider.getJwtExpirationMs(), userMapper.toDto(user));
+            log.info("Register success: email={}", user.getEmail());
+            return AuthResponse.of(accessToken, refreshToken, jwtTokenProvider.getJwtExpirationMs(), userMapper.toDto(user));
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Register failed: email={}, error={}", request.getEmail(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override

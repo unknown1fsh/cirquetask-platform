@@ -59,11 +59,14 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        log.warn("Validation failed: {}", errors);
+        log.warn("Validation failed (register/login etc.): {}", errors);
+        String message = errors.size() == 1
+                ? errors.values().iterator().next()
+                : "Validation failed";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Map<String, String>>builder()
                         .success(false)
-                        .message("Validation failed")
+                        .message(message)
                         .data(errors)
                         .build());
     }

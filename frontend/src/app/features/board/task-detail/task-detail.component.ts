@@ -285,7 +285,8 @@ export class TaskDetailComponent implements OnInit {
     private attachmentService: AttachmentService,
     private labelService: LabelService,
     private dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private snackBar: MatSnackBar
   ) {
     this.taskForm = this.fb.group({
       title: [data.task?.title || '', Validators.required],
@@ -356,6 +357,8 @@ export class TaskDetailComponent implements OnInit {
         error: (err) => {
           const data = err.error?.data;
           if (data && typeof data === 'object' && !Array.isArray(data)) applyServerValidationErrors(this.taskForm, data as Record<string, string>);
+          const msg = err.error?.message || this.translate.instant('taskDetail.createFailed');
+          this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 5000 });
         }
       });
     } else if (this.data.task) {
@@ -364,6 +367,8 @@ export class TaskDetailComponent implements OnInit {
         error: (err) => {
           const data = err.error?.data;
           if (data && typeof data === 'object' && !Array.isArray(data)) applyServerValidationErrors(this.taskForm, data as Record<string, string>);
+          const msg = err.error?.message || this.translate.instant('taskDetail.updateFailed');
+          this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 5000 });
         }
       });
     }
