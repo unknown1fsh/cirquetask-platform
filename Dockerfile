@@ -26,8 +26,8 @@ COPY --from=frontend-build /app/dist/frontend/browser /usr/share/nginx/html
 # Copy nginx config (standalone - backend on 127.0.0.1)
 COPY frontend/nginx.standalone.conf /etc/nginx/conf.d/default.conf
 
-# Copy backend JAR
-COPY --from=backend-build /app/target/*.jar app.jar
+# Copy backend JAR (single executable JAR; * would match -plain.jar too and break COPY)
+COPY --from=backend-build /app/target/cirquetask-backend-1.0.0.jar app.jar
 
 # Create nginx directories
 RUN mkdir -p /run/nginx

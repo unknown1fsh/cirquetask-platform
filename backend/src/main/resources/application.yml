@@ -8,6 +8,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:cirquetask_db}?stringtype=unspecified}
     username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:postgres}}
+    # Yerel: DB_PASSWORD veya PGPASSWORD ile override. Docker-compose: postgres. Railway: PGPASSWORD referans.
     password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD:${DB_PASSWORD:postgres}}}
     driver-class-name: org.postgresql.Driver
     hikari:
