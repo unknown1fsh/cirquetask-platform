@@ -23,8 +23,8 @@ WORKDIR /app
 # Copy frontend static files
 COPY --from=frontend-build /app/dist/frontend/browser /usr/share/nginx/html
 
-# Copy nginx config (standalone - backend on 127.0.0.1)
-COPY frontend/nginx.standalone.conf /etc/nginx/conf.d/default.conf
+# Copy full nginx config (Alpine may include conf.d outside http; use standalone)
+COPY frontend/nginx.standalone.full.conf /etc/nginx/nginx.conf
 
 # Copy backend JAR (single executable JAR; * would match -plain.jar too and break COPY)
 COPY --from=backend-build /app/target/cirquetask-backend-1.0.0.jar app.jar
