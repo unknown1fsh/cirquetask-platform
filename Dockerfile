@@ -23,8 +23,12 @@ WORKDIR /app
 # Copy frontend static files
 COPY --from=frontend-build /app/dist/frontend/browser /usr/share/nginx/html
 
-# Copy full nginx config (Alpine may include conf.d outside http; use standalone)
-COPY frontend/nginx.standalone.full.conf /etc/nginx/nginx.conf
+# Nginx config template (PORT substituted at runtime for Railway)
+COPY frontend/nginx.standalone.full.conf.template /etc/nginx/nginx.conf.template
+
+# Entrypoint: substitute PORT, start Java on 5000, nginx on $PORT
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Copy backend JAR (single executable JAR; * would match -plain.jar too and break COPY)
 COPY --from=backend-build /app/target/cirquetask-backend-1.0.0.jar app.jar
@@ -34,5 +38,5 @@ RUN mkdir -p /run/nginx
 
 EXPOSE 80
 
-# Start both: Java in background, Nginx in foreground
-CMD java -jar app.jar & nginx -g "daemon off;"
+# Railway sends traffic to $PORT; entrypoint makes nginx listen on $PORT, Java on 5000
+ENTRYPOINT ["/docker-entrypoint.sh"]
