@@ -109,6 +109,6 @@ springdoc:
 
 logging:
   level:
-    com.cirquetask: DEBUG
+    com.cirquetask: INFO
     org.springframework.security: INFO
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: WARN

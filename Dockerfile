@@ -27,7 +27,7 @@ RUN if [ -d /tmp/frontend/browser ]; then cp -r /tmp/frontend/browser/. /usr/sha
 # Nginx config template (PORT substituted at runtime for Railway)
 COPY frontend/nginx.standalone.full.conf.template /etc/nginx/nginx.conf.template
 
-# Entrypoint: substitute PORT, start Java on 5000, nginx on $PORT
+# Entrypoint: substitute PORT, start Java on 5001, nginx on $PORT
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
@@ -39,5 +39,5 @@ RUN mkdir -p /run/nginx
 
 EXPOSE 80
 
-# Railway sends traffic to $PORT; entrypoint makes nginx listen on $PORT, Java on 5000
+# Railway sends traffic to $PORT; entrypoint makes nginx listen on $PORT, Java on 5001
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -34,12 +34,10 @@ export class WebSocketService implements OnDestroy {
       heartbeatOutgoing: 4000,
       onConnect: () => {
         this.connected.set(true);
-        console.log('WebSocket connected');
         this.subscribeToNotifications();
       },
       onDisconnect: () => {
         this.connected.set(false);
-        console.log('WebSocket disconnected');
       },
       onStompError: (frame) => {
         console.error('STOMP error:', frame);
