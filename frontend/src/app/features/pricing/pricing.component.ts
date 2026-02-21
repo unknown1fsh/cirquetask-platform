@@ -46,7 +46,7 @@ import { Plan } from '../../core/models';
             </div>
             <div class="plan-price">
               <span class="price">$0</span>
-              <span class="period">/{{ 'pricing.month' | translate }}</span>
+              <span class="period">{{ 'pricing.perMonth' | translate }}</span>
             </div>
             <div class="plan-features">
               <p>{{ 'pricing.freeFeatures' | translate }}</p>
@@ -61,7 +61,7 @@ import { Plan } from '../../core/models';
           </div>
 
           <div class="plan-card featured">
-            <div class="featured-label">Popular</div>
+            <div class="featured-label">{{ 'pricing.popular' | translate }}</div>
             <div class="plan-header">
               <div class="plan-icon pro"><mat-icon>diamond</mat-icon></div>
               <h3>{{ 'pricing.pro' | translate }}</h3>
@@ -69,7 +69,7 @@ import { Plan } from '../../core/models';
             </div>
             <div class="plan-price">
               <span class="price">$12</span>
-              <span class="period">/{{ 'pricing.month' | translate }}</span>
+              <span class="period">{{ 'pricing.perMonth' | translate }}</span>
             </div>
             <div class="plan-features">
               <p>{{ 'pricing.proFeatures' | translate }}</p>
@@ -95,7 +95,7 @@ import { Plan } from '../../core/models';
             </div>
             <div class="plan-price">
               <span class="price">$29</span>
-              <span class="period">/{{ 'pricing.month' | translate }}</span>
+              <span class="period">{{ 'pricing.perMonth' | translate }}</span>
             </div>
             <div class="plan-features">
               <p>{{ 'pricing.businessFeatures' | translate }}</p>

@@ -275,6 +275,7 @@
     "langEn": "English"
   },
   "pricing": {
+    "popular": "Popular",
     "title": "Pricing",
     "subtitle": "Choose the plan that fits your needs",
     "free": "Free",
