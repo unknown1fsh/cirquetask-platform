@@ -95,6 +95,8 @@ management:
   health:
     probes:
       enabled: true
+    mail:
+      enabled: false   # Mail sunucusu yapılandırılmadığında (Railway vb.) health 500 dönmesin
 
 # Swagger / OpenAPI
 springdoc:
