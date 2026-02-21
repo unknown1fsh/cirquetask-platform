@@ -113,6 +113,28 @@ docker-compose up -d
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - PostgreSQL: localhost:5432 (kullanıcı/şifre: postgres)
 
+### Railway ile Deploy
+
+Proje tek servis olarak Railway'da yayınlanabilir (Frontend + Backend tek container).
+
+1. **Railway projesi oluştur:** [railway.app](https://railway.app) → New Project
+2. **PostgreSQL ekle:** Add Service → Database → PostgreSQL
+3. **GitHub repo bağla:** Add Service → GitHub Repo → Bu repoyu seç
+4. **Postgres'i servise bağla:** App servisi → Variables → Add Reference → Postgres (PGHOST, PGPORT, vb. otomatik eklenir)
+5. **Ortam değişkenleri:** Service → Variables bölümünde ekleyin:
+   - `APP_URL` = `https://your-app.up.railway.app` (servise domain ekledikten sonra)
+   - `JWT_SECRET` = güçlü base64 secret (production zorunlu)
+6. **Domain ekle:** Service → Settings → Generate Domain
+7. **Deploy:** GitHub push veya `railway up` ile otomatik deploy
+
+Detaylı env listesi için `.env.example` dosyasına bakın.
+
+**Yerel Railway benzeri test:**
+```bash
+docker compose -f docker-compose.railway.yml up -d
+```
+- Uygulama: http://localhost
+
 ---
 
 ## 🇬🇧 English
@@ -184,6 +206,28 @@ docker-compose up -d
 - Backend API: http://localhost:8080
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - PostgreSQL: localhost:5432 (user/password: postgres)
+
+### Deploy with Railway
+
+The project can be deployed as a single service on Railway (Frontend + Backend in one container).
+
+1. **Create Railway project:** [railway.app](https://railway.app) → New Project
+2. **Add PostgreSQL:** Add Service → Database → PostgreSQL
+3. **Connect GitHub repo:** Add Service → GitHub Repo → Select this repo
+4. **Link Postgres to app:** App service → Variables → Add Reference → Postgres (PGHOST, PGPORT, etc. are added automatically)
+5. **Environment variables:** In Service → Variables, add:
+   - `APP_URL` = `https://your-app.up.railway.app` (after adding a domain to the service)
+   - `JWT_SECRET` = strong base64 secret (required for production)
+6. **Add domain:** Service → Settings → Generate Domain
+7. **Deploy:** Automatic on GitHub push, or run `railway up`
+
+See `.env.example` for the full list of environment variables.
+
+**Local Railway-style test:**
+```bash
+docker compose -f docker-compose.railway.yml up -d
+```
+- App: http://localhost
 
 ---
 

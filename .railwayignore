@@ -1,0 +1,26 @@
+# Dependencies and build artifacts
+node_modules/
+frontend/node_modules/
+backend/target/
+**/target/
+
+# Git
+.git/
+.gitignore
+
+# IDE and local config
+.idea/
+.vscode/
+*.iml
+.env
+.env.local
+.env.*.local
+
+# Test and coverage
+**/coverage/
+**/*.log
+*.log
+
+# Documentation (optional - exclude if not needed in build)
+*.md
+!README.md

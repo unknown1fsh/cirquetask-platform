@@ -1,0 +1,52 @@
+# Railway benzeri tek container deploy - yerel test için
+# Kullanım: docker compose -f docker-compose.railway.yml up -d
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: cirquetask-postgres-railway
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cirquetask_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_railway:/var/lib/postgresql/data
+    networks:
+      - cirquetask-railway
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cirquetask-app-railway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: cirquetask_db
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      APP_URL: http://localhost
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - cirquetask-railway
+
+volumes:
+  postgres_data_railway:
+
+networks:
+  cirquetask-railway:
+    driver: bridge
